@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/com_smart_login_code"
+    android:orientation="vertical"
+    tools:context="com.example.abdull.scorebatao.Activity.PersonsDetail">
+
+
+    <ListView
+
+        android:id="@+id/addPerson"
+        android:background="@color/cardview_dark_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/NewNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:clickable="true"
+        android:visibility="visible"
+        app:elevation="1dp"
+        app:fabSize="normal"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+</LinearLayout>

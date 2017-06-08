@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1085556907996",
+    "firebase_url": "https://scorebatao-2fff9.firebaseio.com",
+    "project_id": "scorebatao-2fff9",
+    "storage_bucket": "scorebatao-2fff9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085556907996:android:dc02199ea7c6253e",
+        "android_client_info": {
+          "package_name": "com.example.abdull.scorebatao"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085556907996-jfs0qb3haft5ett05dk9ucfiul5m6ovn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.abdull.scorebatao",
+            "certificate_hash": "5eec72496aa55cf0a39b3df5d20d3423a0fab5f6"
+          }
+        },
+        {
+          "client_id": "1085556907996-tlacasfn1ee44glidtb5g2sfgbo4nesj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwXJ_lGRPDaXDNh7UrSbwDokrysqQ8fSE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085556907996-tlacasfn1ee44glidtb5g2sfgbo4nesj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

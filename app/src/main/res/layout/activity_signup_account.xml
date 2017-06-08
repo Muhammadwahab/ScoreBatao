@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="@drawable/login"
+    tools:context="com.example.abdull.scorebatao.Activity.signupAccount">
+    <!-- title/icon layout-->
+    <LinearLayout
+        android:layout_weight="3"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign up"
+            android:fontFamily="cursive"
+            android:textColor="@color/defult"
+            android:textStyle=""
+            android:textSize="30dp"
+            android:textAlignment="center"
+            />
+    </LinearLayout>
+    <!-- Info layout-->
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:paddingTop="5dp"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:orientation="vertical"
+        android:layout_weight="7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/EmailIDSignup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/defult"
+            android:drawableLeft="@drawable/email"
+            android:drawablePadding="10dp"
+            android:fontFamily="cursive"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/defult" />
+
+
+        <EditText
+            android:id="@+id/passwordsignup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/defult"
+            android:drawableLeft="@drawable/pass"
+            android:drawablePadding="10dp"
+            android:fontFamily="cursive"
+            android:hint="Password"
+            android:inputType="textWebPassword"
+            android:textColor="@color/defult" />
+
+        <EditText
+            android:id="@+id/confirmpasswordsignup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/defult"
+            android:drawableLeft="@drawable/pass"
+            android:drawablePadding="10dp"
+            android:fontFamily="cursive"
+            android:hint="Confirm Password"
+            android:inputType="textWebPassword"
+            android:textColor="@color/defult" />
+
+        <Button
+            android:id="@+id/createAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#60000000"
+            android:text="SIGN UP"
+            android:textColor="@color/defult"
+
+            />
+        <TextView
+            android:fontFamily="cursive"
+            android:paddingTop="5dp"
+            android:textColor="@color/defult"
+            android:textAlignment="center"
+            android:backgroundTint="@color/defult"
+            android:text="By signing up,I agree to the Terms of Use"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
