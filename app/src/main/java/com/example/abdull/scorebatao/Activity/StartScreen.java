@@ -115,9 +115,9 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                     sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES,Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedpreferences.edit();
 
-                    editor.putString("email", emailOfFB);
+                    editor.putString(utilityConstant.email, emailOfFB);
                     editor.commit();
-                    myRef.addValueEventListener(new ValueEventListener() {
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             // This method is called once with the initial value and again
@@ -310,7 +310,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         if(accessToken!=null)
         {
             sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-            String Email = sharedpreferences.getString("email","not found");
+            String Email = sharedpreferences.getString(utilityConstant.email,"not found");
             Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
             ListOFScreen.putExtra("Email",Email);
             signInMethod(utilityConstant.facebook);
@@ -319,7 +319,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         }
         else
         {
-            Toast.makeText(this, "Fb Not Sign In ", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Fb Not Sign In ", Toast.LENGTH_SHORT).show();
         }
     }
     @Override

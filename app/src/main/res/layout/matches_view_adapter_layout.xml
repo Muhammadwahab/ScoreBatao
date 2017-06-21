@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_margin="20dp"
     >
 
     <TextView
@@ -35,17 +36,19 @@
             android:textSize="20dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="6"
+            android:layout_weight="5"
             android:text="Pakistan vs West Indies"
             android:textColor="@color/defult"
             />
-        <Switch
-            android:id="@+id/scset"
-            android:layout_weight="4"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            />
+
     </LinearLayout>
+
+    <Switch
+        android:id="@+id/scset"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        />
 
     <Button
         android:id="@+id/setCoverage"

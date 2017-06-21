@@ -104,7 +104,8 @@ public class currentMatch extends Fragment {
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         currentMatchesAdapter.clear();
-                        currentMatchesAdapter.addAll(getData(response));
+                        arrayList=getData(response);
+                        currentMatchesAdapter.addAll(arrayList);
                         currentMatchesAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
@@ -127,7 +128,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if(localData.getBoolean("matchStarted")==false)
+                if(localData.getBoolean("matchStarted")==true)
                 {
                     continue;
                 }

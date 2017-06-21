@@ -1,7 +1,9 @@
 package com.example.abdull.scorebatao.Activity;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -64,10 +66,19 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         numbers=new ArrayList<String>();
 
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         ListView listView = (ListView) findViewById(R.id.addPerson);
          arrayAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, numbers);
         listView.setAdapter(arrayAdapter);
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.NewNumber);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                deleteNumber(id);
+            }
+        });
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,9 +130,20 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
                                     for(DataSnapshot phone:childPhoneNumber)
                                     {
-
                                         String key=phone.getKey();
-                                        numbers.add(key);
+
+                                        if(key.equalsIgnoreCase("status"))
+                                        {
+
+                                        }
+                                        else if(key.equalsIgnoreCase("time"))
+                                        {
+
+                                        }
+                                        else
+                                        {
+                                            numbers.add(key);
+                                        }
 
                                     }
 //                                    arrayAdapter.clear();
@@ -163,15 +185,24 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             getMatchID.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
                     Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
                     numbers.clear();
-
                     for(DataSnapshot phone:childPhoneNumber)
                     {
 
                         String key=phone.getKey();
-                        numbers.add(key);
+                        if(key.equalsIgnoreCase("status"))
+                        {
+
+                        }
+                        else if(key.equalsIgnoreCase("time"))
+                        {
+
+                        }
+                        else
+                        {
+                            numbers.add(key);
+                        }
 
                     }
 //                                    arrayAdapter.clear();
@@ -209,6 +240,8 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                     SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                     preferences.edit().remove(utilityConstant.requestCatche).commit();
                     preferences.edit().remove(utilityConstant.emailRequest).commit();
+                    preferences.edit().remove(utilityConstant.email).commit();
+                    preferences.edit().remove(utilityConstant.signInMethod).commit();
                 }
                 else if(verify.equalsIgnoreCase(utilityConstant.custom))
                 {
@@ -217,10 +250,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                     SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                     preferences.edit().remove(utilityConstant.requestCatche).commit();
                     preferences.edit().remove(utilityConstant.emailRequest).commit();
+                    preferences.edit().remove(utilityConstant.email).commit();
+                    preferences.edit().remove(utilityConstant.signInMethod).commit();
                     startActivity(new Intent(PersonsDetail.this,MainActivity.class));
-
                 }
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -353,6 +386,41 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private void deleteNumber(final long idDelete)
+    {
+        final AlertDialog.Builder optionBuilder=new AlertDialog.Builder(this);
+
+
+        optionBuilder.setTitle("Options");
+        optionBuilder.setMessage("Want to  Delete Record");
+        optionBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String Request;
+                Request=storeUserRequest.getString(utilityConstant.requestCatche,"null");
+                String idlocal="/matchID-" + intent.getLongExtra("matchId", -2)+"/"+numbers.get((int) idDelete);
+                DatabaseReference DeleteNumber = database.getReference(Request+idlocal);
+                DeleteNumber.removeValue();
+
+
+
+            }
+        });
+
+        optionBuilder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog optionAlert=optionBuilder.create();
+        optionAlert.show();
+
+
 
     }
 }

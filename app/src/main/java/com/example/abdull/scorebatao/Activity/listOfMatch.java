@@ -62,6 +62,8 @@ public class listOfMatch extends AppCompatActivity {
                     SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                     preferences.edit().remove(utilityConstant.requestCatche).commit();
                     preferences.edit().remove(utilityConstant.emailRequest).commit();
+                    preferences.edit().remove(utilityConstant.email).commit();
+                    preferences.edit().remove(utilityConstant.signInMethod).commit();
                 }
                 else if(verify.equalsIgnoreCase(utilityConstant.custom))
                 {
@@ -70,6 +72,8 @@ public class listOfMatch extends AppCompatActivity {
                     SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                     preferences.edit().remove(utilityConstant.requestCatche).commit();
                     preferences.edit().remove(utilityConstant.emailRequest).commit();
+                    preferences.edit().remove(utilityConstant.email).commit();
+                    preferences.edit().remove(utilityConstant.signInMethod).commit();
                     startActivity(new Intent(listOfMatch.this,MainActivity.class));
 
                 }

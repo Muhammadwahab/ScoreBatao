@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
 import android.util.Log;
@@ -53,6 +54,8 @@ public class services extends Service {
     private Handler mHandler = new Handler();
     // timer handling
     private Timer mTimer = null;
+    PowerManager pm;
+    PowerManager.WakeLock wl;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -76,6 +79,11 @@ public class services extends Service {
             userLocal user1= (userLocal) userData.get(0);
             utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
             mTimer = new Timer();
+            pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
+            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+            wl.acquire();
+            Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
+//do what you need to do
         }
         // schedule task
        mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(), 0, utilityConstant.NOTIFY_INTERVAL);
@@ -174,12 +182,26 @@ public class services extends Service {
     };
     public void getScore(String response) {
         JSONTokener jsonTokener = new JSONTokener(response);
+        String Score="";
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
                 String Team_1=jsonObject.getString("team-1");
             String Team_2=jsonObject.getString("team-2");
             String matchType=jsonObject.getString("type");
-            String Score=jsonObject.getString("score");
+            boolean matchStarted=jsonObject.getBoolean("matchStarted");
+            if(matchType.equalsIgnoreCase(utilityConstant.ODI))
+            {
+                matchType="ODI";
+            }
+            if(matchStarted)
+            {
+                 Score=jsonObject.getString("score");
+            }
+            else
+            {
+                Score="Match Not Start";
+            }
+
             String innings_requirement=jsonObject.getString("innings-requirement");
              CombineScore=matchType+""+Team_1+"VS"+Team_2+"Score "+Score+""+innings_requirement;
             ArrayList check=new ArrayList();
@@ -223,6 +245,7 @@ public class services extends Service {
     @Override
     public void onDestroy() {
         mTimer.cancel();
+        wl.release();
         Toast.makeText(this, "Service Destroy", Toast.LENGTH_SHORT).show();
     }
 

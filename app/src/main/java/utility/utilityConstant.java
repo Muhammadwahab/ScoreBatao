@@ -15,7 +15,11 @@ public class utilityConstant {
     public static String signInMethod="signInMethod";
     public static String facebook="facebook";
     public static String custom="custom";
+    public static String email="email";
     public static long NOTIFY_INTERVAL = 10 * 1000; // 10 seconds
+    public static int CHECKCOUNT =0; // 10 seconds
+    public static String ODI="One-Day Internationals";
+
 
 
 

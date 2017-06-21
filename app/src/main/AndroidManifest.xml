@@ -4,12 +4,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/sb"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/sb"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data android:name="com.facebook.sdk.ApplicationId"
@@ -28,7 +29,9 @@
         </activity>
         <activity android:name=".Activity.StartScreen" />
         <activity android:name=".Activity.listOfMatch" />
-        <activity android:name=".Activity.PersonsDetail" />
+        <activity android:name=".Activity.PersonsDetail"
+            android:parentActivityName="com.example.abdull.scorebatao.Activity.listOfMatch"
+            />
         <activity android:name=".Activity.AddPersons" />
         <activity android:name=".Activity.signupAccount"></activity>
 
