@@ -53,7 +53,7 @@ import java.util.List;
 
 import utility.utilityConstant;
 
-public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener,View.OnClickListener,CompoundButton.OnCheckedChangeListener {
+public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener,CompoundButton.OnCheckedChangeListener {
     String name[] = {"wahab", "wahab", "wahab", "wahab", "wahab", "wahab"};
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("users");
@@ -62,7 +62,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     ArrayList numbers;
     ArrayAdapter<String> arrayAdapter;
     private SharedPreferences sharedpreferences;
-    LinearLayout linearLayout;
+    LinearLayout linearLayout,horizontalLinearButtons;
     TextView textView=null;
     Spinner intervalSpinner,eventSpinner;
 
@@ -270,27 +270,31 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     private void postDailog() {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // get layout inflator for setting layout in dailog
         LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.activity_add_persons, null);
+
         final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
         final Button save = (Button) dialogView.findViewById(R.id.Save); //here
         final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
         // Spinner element
         final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
-        // radio button
+        // radio buttons
         RadioButton Interval= (RadioButton) dialogView.findViewById(R.id.radio_interval);
         RadioButton Event= (RadioButton) dialogView.findViewById(R.id.radio_event);
         RadioButton OffRadio= (RadioButton) dialogView.findViewById(R.id.radio_Of);
-       // Interval.setOnClickListener((View.OnClickListener) this);
+
+        // adding onCheck Listener in radio button
+
         Interval.setOnCheckedChangeListener(this);
         Event.setOnCheckedChangeListener(this);
         OffRadio.setOnCheckedChangeListener(this);
-//        Event.setOnClickListener((View.OnClickListener) this);
-//        OffRadio.setOnClickListener((View.OnClickListener) this);
 
         // linear layout for adding child
-
         linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
+        // horizontal layout for buttons
+        horizontalLinearButtons = (LinearLayout) dialogView.findViewById(R.id.horizontalButton);
 
 
 
@@ -427,62 +431,6 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     }
 
     @Override
-    public void onClick(View v) {
-        if(v.getId()==R.id.radio_interval)
-        {
-            boolean checked = ((RadioButton) v).isChecked();
-            Toast.makeText(this, ""+checked, Toast.LENGTH_SHORT).show();
-            if(!checked)
-            {
-                intervalSpinner=new Spinner(this);
-                // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.timeofMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-                intervalSpinner.setAdapter(adapter);
-                linearLayout.removeView(eventSpinner);
-                linearLayout.addView(intervalSpinner);
-            }
-
-            Toast.makeText(this, "Interval", Toast.LENGTH_SHORT).show();
-        }
-        else if(v.getId()==R.id.radio_event)
-        {
-            boolean checked = ((RadioButton) v).isChecked();
-            Toast.makeText(this, ""+checked, Toast.LENGTH_SHORT).show();
-            if(!checked)
-            {
-                eventSpinner=new Spinner(this);
-                // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.EventOfMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-                eventSpinner.setAdapter(adapter);
-                linearLayout.removeView(intervalSpinner);
-                linearLayout.addView(eventSpinner);
-            }
-
-
-            Toast.makeText(this, "Event", Toast.LENGTH_SHORT).show();
-        }
-
-        else
-        {
-            Toast.makeText(this, "OFF", Toast.LENGTH_SHORT).show();
-            linearLayout.removeView(eventSpinner);
-            linearLayout.removeView(intervalSpinner);
-
-        }
-
-    }
-
-
-
-    @Override
     public void onCheckedChanged(CompoundButton v, boolean isChecked) {
 
         if(v.getId()==R.id.radio_interval)
@@ -500,6 +448,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 intervalSpinner.setAdapter(adapter);
                 linearLayout.removeView(eventSpinner);
                 linearLayout.addView(intervalSpinner);
+                linearLayout.removeView(horizontalLinearButtons);
+                linearLayout.addView(horizontalLinearButtons);
+                horizontalLinearButtons.setVisibility(View.VISIBLE);
             }
 
             Toast.makeText(this, "Interval", Toast.LENGTH_SHORT).show();
@@ -519,6 +470,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 eventSpinner.setAdapter(adapter);
                 linearLayout.removeView(intervalSpinner);
                 linearLayout.addView(eventSpinner);
+                linearLayout.removeView(horizontalLinearButtons);
+                linearLayout.addView(horizontalLinearButtons);
+                horizontalLinearButtons.setVisibility(View.VISIBLE);
+
             }
 
 
@@ -531,6 +486,8 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             {
                 linearLayout.removeView(eventSpinner);
                 linearLayout.removeView(intervalSpinner);
+                horizontalLinearButtons.setVisibility(View.GONE);
+
             }
             Toast.makeText(this, "OFF", Toast.LENGTH_SHORT).show();
 
