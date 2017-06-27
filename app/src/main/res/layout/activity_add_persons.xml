@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/insertCoverge"
     tools:context="com.example.abdull.scorebatao.Activity.AddPersons">
 
     <EditText
@@ -20,6 +21,27 @@
         android:layout_height="wrap_content"
        />
 
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/covergeGroup"
+        android:orientation="vertical">
+        <RadioButton android:id="@+id/radio_interval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Interval"
+            />
+        <RadioButton android:id="@+id/radio_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Event"
+            />
+        <RadioButton android:id="@+id/radio_Of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SetOFF"
+            />
+    </RadioGroup>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,5 +65,4 @@
             android:layout_weight="1"
             android:text="Save" />
     </LinearLayout>
-
 </LinearLayout>

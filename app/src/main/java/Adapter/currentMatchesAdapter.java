@@ -42,8 +42,10 @@ import utility.utilityConstant;
  */
 
 
-public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickListener,AdapterView.OnItemSelectedListener {
-    ArrayList liveMatches=new ArrayList();
+public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+    public boolean checkOnOf;
+    public boolean checkOFF;
+    ArrayList liveMatches = new ArrayList();
     Button setCoverage;
     Context context;
     long matchID;
@@ -51,14 +53,12 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("users");
     currentLiveMatches matches;
-    public boolean checkOnOf;
-    public boolean checkOFF;
     Switch OnOff;
 
     public currentMatchesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList live) {
         super(context, resource, live);
-        this.context=context;
-        liveMatches=live;
+        this.context = context;
+        liveMatches = live;
 
     }
 
@@ -66,63 +66,54 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        userLocal check=null;
+        userLocal check = null;
 
 
-            convertView=LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout,parent,false);
+        convertView = LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout, parent, false);
 
 
+        storeUserRequest = ((Activity) context).getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
+        matches = (currentLiveMatches) (currentLiveMatches) liveMatches.get(position);
+        matchID = matches.getUnique_ID();
 
-
-        storeUserRequest= ((Activity)context).getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-           TextView oneVsTwo=(TextView)convertView.findViewById(R.id.oneVsTwo);
-         matches= (currentLiveMatches) (currentLiveMatches) liveMatches.get(position);
-         matchID=matches.getUnique_ID();
-
-           // oneVsTwo.setText(matches.getTeamOne()+" VS "+matches.getTeamTwo());
-        oneVsTwo.setText(matches.getUnique_ID()+matches.getTeamOne()+"VS"+matches.getTeamTwo());
-          setCoverage=(Button) convertView.findViewById(R.id.setCoverage);
-       setCoverage.setOnClickListener(this);
+        // oneVsTwo.setText(matches.getTeamOne()+" VS "+matches.getTeamTwo());
+        oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
+        setCoverage = (Button) convertView.findViewById(R.id.setCoverage);
+        setCoverage.setOnClickListener(this);
         setCoverage.setTag(position);
         // Spinner element
         final Spinner spinner = (Spinner) convertView.findViewById(R.id.spinner2);
-         OnOff= (Switch) (Switch) convertView.findViewById(R.id.scset);
-        final helper helper=new helper(context);
-        ArrayList local=helper.showRecord();
+        OnOff = (Switch) (Switch) convertView.findViewById(R.id.scset);
+        final helper helper = new helper(context);
+        ArrayList local = helper.showRecord();
 
 
+        if (local.size() != 0) {
+            check = (userLocal) local.get(0);
+            if (check.getMatchID().equalsIgnoreCase(String.valueOf(matchID))) {
+
+                OnOff.setChecked(true);
+                checkOnOf = true;
 
 
-        if(local.size()!=0)
-        {
-            check= (userLocal) local.get(0);
-            if(check.getMatchID().equalsIgnoreCase(String.valueOf(matchID)))
-            {
-
-                    OnOff.setChecked(true);
-                    checkOnOf=true;
-
-
-
-            }
-            else
-            {
+            } else {
 
                 //OnOff.setChecked(false);
                 //checkOFF=true;
-              //  OnOff.setOnCheckedChangeListener(null);
-              //  OnOff.setChecked(false);
+                //  OnOff.setOnCheckedChangeListener(null);
+                //  OnOff.setChecked(false);
             }
         }
 
         OnOff.setTag(position);
-        
+
         OnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                final currentLiveMatches matches= (currentLiveMatches) liveMatches.get((Integer) buttonView.getTag());
-                Toast.makeText(context, "onoff id "+matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
+                final currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) buttonView.getTag());
+                Toast.makeText(context, "onoff id " + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
                 if (isChecked) {
 
                     // this is for validation
@@ -143,13 +134,11 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 //                    {
 //
 //                    }
-                    if(!checkOnOf)
-                    {
+                    if (!checkOnOf) {
                         // yaha se copy kia he hum ne
-                        final String time= (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
+                        final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
                         String Request;
-                        if((Request=storeUserRequest.getString(utilityConstant.requestCatche,"null")).equalsIgnoreCase("null"))
-                        {
+                        if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
 
                             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -164,17 +153,17 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         HashMap hashMap = (HashMap) child.getValue();
                                         final String email = (String) hashMap.get("email");
 
-                                        if (email.equalsIgnoreCase(((Activity)context).getIntent().getStringExtra("Email"))) {
+                                        if (email.equalsIgnoreCase(((Activity) context).getIntent().getStringExtra("Email"))) {
                                             DatabaseReference databaseReference = child.getRef();
-                                            String id="matchID-" + matches.getUnique_ID();
-                                            String reference = databaseReference.toString() + "/" + "id"+ "/"+id;
+                                            String id = "matchID-" + matches.getUnique_ID();
+                                            String reference = databaseReference.toString() + "/" + "id" + "/" + id;
 
                                             // storing in sharedprefference
 
-                                            String storeLocalReference=databaseReference.toString()+"/"+"id";
-                                            StringBuilder stringLocalBuilder=new StringBuilder(storeLocalReference);
-                                            SharedPreferences.Editor editor=storeUserRequest.edit();
-                                            editor.putString(utilityConstant.requestCatche,stringLocalBuilder.replace(0, 40, "").toString());
+                                            String storeLocalReference = databaseReference.toString() + "/" + "id";
+                                            StringBuilder stringLocalBuilder = new StringBuilder(storeLocalReference);
+                                            SharedPreferences.Editor editor = storeUserRequest.edit();
+                                            editor.putString(utilityConstant.requestCatche, stringLocalBuilder.replace(0, 40, "").toString());
                                             editor.commit();
                                             // end storing in shared prefference
 
@@ -189,33 +178,26 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                                     Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
-                                                    ArrayList numbers=new ArrayList();
-                                                    for(DataSnapshot phone:childPhoneNumber)
-                                                    {
-                                                        String key=phone.getKey();
-                                                        if(key.equalsIgnoreCase("status") || key.equalsIgnoreCase("time"))
-                                                        {
+                                                    ArrayList numbers = new ArrayList();
+                                                    for (DataSnapshot phone : childPhoneNumber) {
+                                                        String key = phone.getKey();
+                                                        if (key.equalsIgnoreCase("status") || key.equalsIgnoreCase("time")) {
 
-                                                        }
-                                                        else
-                                                        {
+                                                        } else {
                                                             numbers.add(key);
                                                         }
 
                                                     }
                                                     Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
 
-                                                    helper insert=new helper(context);
-                                                    Intent intent=((Activity)context).getIntent();
-                                                    long idCheck=insert.insertData(matches.getUnique_ID()+"","On",numbers,intent.getStringExtra("Email"),time);
-                                                    if(idCheck!=-1)
-                                                    {
-                                                       Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
-                                                        ((Activity)context).startService(new Intent(getContext(), services.class));
+                                                    helper insert = new helper(context);
+                                                    Intent intent = ((Activity) context).getIntent();
+                                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", "On", numbers, intent.getStringExtra("Email"), time);
+                                                    if (idCheck != -1) {
+                                                        Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
+                                                        ((Activity) context).startService(new Intent(getContext(), services.class));
 
-                                                    }
-                                                    else
-                                                    {
+                                                    } else {
                                                         Toast.makeText(context, "Error in Database", Toast.LENGTH_SHORT).show();
                                                     }
 
@@ -248,12 +230,10 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                     Log.w("Read Failed", "Failed to read value.", error.toException());
                                 }
                             });
-                        }
-                        else
-                        {
+                        } else {
                             Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
-                            String id="matchID-" + matches.getUnique_ID();
-                            DatabaseReference databaseReference=database.getReference(Request+"/"+id);
+                            String id = "matchID-" + matches.getUnique_ID();
+                            DatabaseReference databaseReference = database.getReference(Request + "/" + id);
                             databaseReference.child("time").setValue(time);
                             databaseReference.child("status").setValue("on");
                             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -261,39 +241,30 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
-                                    ArrayList numbers=new ArrayList();
-                                    String status="",times="";
-                                    for(DataSnapshot phone:childPhoneNumber)
-                                    {
-                                        String key=phone.getKey();
-                                        if(key.equalsIgnoreCase("status"))
-                                        {
-                                            status=phone.getValue().toString();
+                                    ArrayList numbers = new ArrayList();
+                                    String status = "", times = "";
+                                    for (DataSnapshot phone : childPhoneNumber) {
+                                        String key = phone.getKey();
+                                        if (key.equalsIgnoreCase("status")) {
+                                            status = phone.getValue().toString();
 
-                                        }
-                                        else if (key.equalsIgnoreCase("time"))
-                                        {
-                                            times=phone.getValue().toString();
+                                        } else if (key.equalsIgnoreCase("time")) {
+                                            times = phone.getValue().toString();
 
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             numbers.add(key);
 
                                         }
 
                                     }
-                                    helper insert=new helper(context);
-                                    Intent intent=((Activity)context).getIntent();
-                                    long idCheck=insert.insertData(matches.getUnique_ID()+"",status,numbers,intent.getStringExtra("Email"),times);
-                                    if(idCheck!=-1)
-                                    {
+                                    helper insert = new helper(context);
+                                    Intent intent = ((Activity) context).getIntent();
+                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", status, numbers, intent.getStringExtra("Email"), times);
+                                    if (idCheck != -1) {
                                         Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
-                                        ((Activity)context).startService(new Intent(getContext(), services.class));
+                                        ((Activity) context).startService(new Intent(getContext(), services.class));
 
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         Toast.makeText(context, "Error in Database", Toast.LENGTH_SHORT).show();
                                     }
                                     // insert.insertData("wahab","sss");
@@ -313,20 +284,16 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                     }
 
 
-
-
                 } else {
                     // The toggle is disabled
-                    if (!checkOFF)
-                    {
+                    if (!checkOFF) {
 
                     }
-                    checkOnOf=false;
-                    utilityConstant.CHECKCOUNT=0;
+                    checkOnOf = false;
+                    utilityConstant.CHECKCOUNT = 0;
                     Toast.makeText(context, "Disable", Toast.LENGTH_SHORT).show();
                     String Request;
-                    if((Request=storeUserRequest.getString(utilityConstant.requestCatche,"null")).equalsIgnoreCase("null"))
-                    {
+                    if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
                         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -340,17 +307,17 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                     HashMap hashMap = (HashMap) child.getValue();
                                     final String email = (String) hashMap.get("email");
 
-                                    if (email.equalsIgnoreCase(((Activity)context).getIntent().getStringExtra("Email"))) {
+                                    if (email.equalsIgnoreCase(((Activity) context).getIntent().getStringExtra("Email"))) {
                                         DatabaseReference databaseReference = child.getRef();
-                                        String id="matchID-" + matches.getUnique_ID();
-                                        String reference = databaseReference.toString() + "/" + "id"+ "/"+id;
+                                        String id = "matchID-" + matches.getUnique_ID();
+                                        String reference = databaseReference.toString() + "/" + "id" + "/" + id;
 
                                         // storing in sharedprefference
 
-                                        String storeLocalReference=databaseReference.toString()+"/"+"id";
-                                        StringBuilder stringLocalBuilder=new StringBuilder(storeLocalReference);
-                                        SharedPreferences.Editor editor=storeUserRequest.edit();
-                                        editor.putString(utilityConstant.requestCatche,stringLocalBuilder.replace(0, 40, "").toString());
+                                        String storeLocalReference = databaseReference.toString() + "/" + "id";
+                                        StringBuilder stringLocalBuilder = new StringBuilder(storeLocalReference);
+                                        SharedPreferences.Editor editor = storeUserRequest.edit();
+                                        editor.putString(utilityConstant.requestCatche, stringLocalBuilder.replace(0, 40, "").toString());
                                         editor.commit();
                                         // end storing in shared prefference
 
@@ -359,15 +326,12 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference getMatchID = database.getReference(refvalue);
                                         getMatchID.child("status").setValue("OFF");
-                                        helper insert=new helper(context);
-                                        ((Activity)context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE","STOP"));
+                                        helper insert = new helper(context);
+                                        ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
                                         insert.deleteAll();
 
 
                                         // insert.insertData("wahab","sss");
-
-
-
 
 
                                         break;
@@ -385,14 +349,12 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                 Log.w("Read Failed", "Failed to read value.", error.toException());
                             }
                         });
-                    }
-                    else
-                    {
-                        String id="matchID-" + matches.getUnique_ID();
-                        DatabaseReference databaseReference=database.getReference(Request+"/"+id);
+                    } else {
+                        String id = "matchID-" + matches.getUnique_ID();
+                        DatabaseReference databaseReference = database.getReference(Request + "/" + id);
                         databaseReference.child("status").setValue("OFF");
-                        helper insert=new helper(context);
-                        ((Activity)context).stopService(new Intent(getContext(), services.class));
+                        helper insert = new helper(context);
+                        ((Activity) context).stopService(new Intent(getContext(), services.class));
                         insert.deleteAll();
                     }
 
@@ -415,28 +377,29 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        Button button= (Button) v;
+        Button button = (Button) v;
 
-        if(button.getId()==setCoverage.getId())
-        {
-            currentLiveMatches matches= (currentLiveMatches) liveMatches.get((Integer) v.getTag());
-            Toast.makeText(context, "Match id"+matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
+        if (button.getId() == setCoverage.getId()) {
+            currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) v.getTag());
+            Toast.makeText(context, "Match id" + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
 
-            Intent intent=((Activity)context).getIntent();
-            Toast.makeText(getContext(),"set Coverage",Toast.LENGTH_LONG).show();
-           Intent addPerson=new Intent(getContext(), PersonsDetail.class);
-            addPerson.putExtra("Email",intent.getStringExtra("Email"));
-            addPerson.putExtra("matchId",matches.getUnique_ID());
-           getContext().startActivity(addPerson);
+            Intent intent = ((Activity) context).getIntent();
+            Toast.makeText(getContext(), "set Coverage", Toast.LENGTH_LONG).show();
+            Intent addPerson = new Intent(getContext(), PersonsDetail.class);
+            addPerson.putExtra("Email", intent.getStringExtra("Email"));
+            addPerson.putExtra("matchId", matches.getUnique_ID());
+            getContext().startActivity(addPerson);
             //((Activity)context).finish();
         }
 
     }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-      //  Toast.makeText(getContext(), "Position is "+position, Toast.LENGTH_SHORT).show();
-        utilityConstant.spinnerItemPosition=position;
+        //  Toast.makeText(getContext(), "Position is "+position, Toast.LENGTH_SHORT).show();
+        utilityConstant.spinnerItemPosition = position;
     }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
