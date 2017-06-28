@@ -1,17 +1,13 @@
 package com.example.abdull.scorebatao.Activity;
 
-import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,45 +22,35 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.abdull.scorebatao.R;
 import com.facebook.login.LoginManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import utility.utilityConstant;
 
-public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener,CompoundButton.OnCheckedChangeListener {
-    String name[] = {"wahab", "wahab", "wahab", "wahab", "wahab", "wahab"};
+public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("users");
     Intent intent;
     SharedPreferences storeUserRequest;
     ArrayList numbers;
     ArrayAdapter<String> arrayAdapter;
+    LinearLayout linearLayout, horizontalLinearButtons;
+    Spinner intervalSpinner, eventSpinner;
     private SharedPreferences sharedpreferences;
-    LinearLayout linearLayout,horizontalLinearButtons;
-    TextView textView=null;
-    Spinner intervalSpinner,eventSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +59,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         intent = getIntent();
         storeUserRequest = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         numbers = new ArrayList<String>();
-
-
+        // adding back button in activity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -281,9 +266,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         // Spinner element
         final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
         // radio buttons
-        RadioButton Interval= (RadioButton) dialogView.findViewById(R.id.radio_interval);
-        RadioButton Event= (RadioButton) dialogView.findViewById(R.id.radio_event);
-        RadioButton OffRadio= (RadioButton) dialogView.findViewById(R.id.radio_Of);
+        RadioButton Interval = (RadioButton) dialogView.findViewById(R.id.radio_interval);
+        RadioButton Event = (RadioButton) dialogView.findViewById(R.id.radio_event);
+        RadioButton OffRadio = (RadioButton) dialogView.findViewById(R.id.radio_Of);
 
         // adding onCheck Listener in radio button
 
@@ -295,11 +280,6 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
         // horizontal layout for buttons
         horizontalLinearButtons = (LinearLayout) dialogView.findViewById(R.id.horizontalButton);
-
-
-
-
-
 
 
 // Create an ArrayAdapter using the string array and a default spinner layout
@@ -314,6 +294,8 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 //
 //                ProgressDialog progress = new ProgressDialog(PersonsDetail.this);
 //                progress.setTitle("Loading");
@@ -323,10 +305,13 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 //// To dismiss the dialog
 //              //  progress.dismiss();
                 final String phoneNumber = PhoneNumber.getText().toString().trim();
-                if (phoneNumber.equalsIgnoreCase("")) {
-                    Toast.makeText(PersonsDetail.this, "Please Enter Phone Number", Toast.LENGTH_SHORT).show();
+                Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
+                Matcher m = p.matcher(phoneNumber);
+                boolean b = m.matches();
+                if (!b) {
+                    Toast.makeText(PersonsDetail.this, "Invalid PhoneNumber", Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(PersonsDetail.this, "item is " + spinner.getItemAtPosition(utilityConstant.spinnerItemPosition), Toast.LENGTH_SHORT).show();
+                    ///Toast.makeText(PersonsDetail.this, "item is " + spinner.getItemAtPosition(utilityConstant.spinnerItemPosition), Toast.LENGTH_SHORT).show();
                 } else {
                     String Request;
                     if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
@@ -433,12 +418,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     @Override
     public void onCheckedChanged(CompoundButton v, boolean isChecked) {
 
-        if(v.getId()==R.id.radio_interval)
-        {
+        if (v.getId() == R.id.radio_interval) {
 
-            if(isChecked)
-            {
-                intervalSpinner=new Spinner(this);
+            if (isChecked) {
+                intervalSpinner = new Spinner(this);
                 // Create an ArrayAdapter using the string array and a default spinner layout
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                         R.array.timeofMatch, android.R.layout.simple_spinner_item);
@@ -454,13 +437,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             }
 
             Toast.makeText(this, "Interval", Toast.LENGTH_SHORT).show();
-        }
-        else if(v.getId()==R.id.radio_event)
-        {
+        } else if (v.getId() == R.id.radio_event) {
 
-            if(isChecked)
-            {
-                eventSpinner=new Spinner(this);
+            if (isChecked) {
+                eventSpinner = new Spinner(this);
                 // Create an ArrayAdapter using the string array and a default spinner layout
                 ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                         R.array.EventOfMatch, android.R.layout.simple_spinner_item);
@@ -478,19 +458,14 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
 
             Toast.makeText(this, "Event", Toast.LENGTH_SHORT).show();
-        }
-
-        else
-        {
-            if(isChecked)
-            {
+        } else {
+            if (isChecked) {
                 linearLayout.removeView(eventSpinner);
                 linearLayout.removeView(intervalSpinner);
                 horizontalLinearButtons.setVisibility(View.GONE);
 
             }
             Toast.makeText(this, "OFF", Toast.LENGTH_SHORT).show();
-
 
 
         }

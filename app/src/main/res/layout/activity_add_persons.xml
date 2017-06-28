@@ -7,6 +7,12 @@
     android:orientation="vertical"
     android:id="@+id/insertCoverge"
     tools:context="com.example.abdull.scorebatao.Activity.AddPersons">
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Name"
+        android:inputType="textAutoCorrect" />
 
     <EditText
         android:id="@+id/phoneNumber"
