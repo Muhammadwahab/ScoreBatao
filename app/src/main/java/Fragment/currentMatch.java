@@ -1,6 +1,5 @@
 package Fragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,14 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,19 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import Adapter.currentMatchesAdapter;
 import pojo.currentLiveMatches;
-import utility.utilityConstant;
 
 /**
  * Created by abdull on 3/23/17.
@@ -52,7 +38,7 @@ import utility.utilityConstant;
 public class currentMatch extends Fragment {
     ListView listView;
     currentLiveMatches liveMatches[];
-    private ArrayList arrayList=new ArrayList();
+    private ArrayList arrayList = new ArrayList();
     View view;
     ViewGroup container;
     currentMatchesAdapter currentMatchesAdapter;
@@ -60,22 +46,20 @@ public class currentMatch extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.container=container;
-        Toast.makeText(getActivity(), "Email in Fragment "+getArguments().getString("Email","Email Not Found In Frament"), Toast.LENGTH_SHORT).show();
-        view=LayoutInflater.from(getContext()).inflate(R.layout.current_match,container,false);
-        listView=(ListView)view.findViewById(R.id.curretListView);
+        this.container = container;
+        Toast.makeText(getActivity(), "Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"), Toast.LENGTH_SHORT).show();
+        view = LayoutInflater.from(getContext()).inflate(R.layout.current_match, container, false);
+        listView = (ListView) view.findViewById(R.id.curretListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currentLiveMatches matches= (currentLiveMatches) arrayList.get(position);
+                currentLiveMatches matches = (currentLiveMatches) arrayList.get(position);
 
-                Toast.makeText(getContext(), "id is "+matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "id is " + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
             }
         });
-      // currentMatchesAdapter=new currentMatchesAdapter(getActivity(),0,arrayList);
-     // profileadapter profileadapter=new profileadapter();
-
-
+        // currentMatchesAdapter=new currentMatchesAdapter(getActivity(),0,arrayList);
+        // profileadapter profileadapter=new profileadapter();
 
 
         return view;
@@ -86,16 +70,15 @@ public class currentMatch extends Fragment {
 
         super.onStart();
         gettingMatches();
-        currentMatchesAdapter=new currentMatchesAdapter(getActivity(),0,arrayList);
+        currentMatchesAdapter = new currentMatchesAdapter(getActivity(), 0, arrayList);
         listView.setAdapter(currentMatchesAdapter);
     }
 
 
-    void gettingMatches()
-    {
-       // Instantiate the RequestQueue.
-            RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url ="http://cricapi.com/api/matches?apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
+    void gettingMatches() {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url = "http://cricapi.com/api/matches?apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -104,7 +87,7 @@ public class currentMatch extends Fragment {
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
                         currentMatchesAdapter.clear();
-                        arrayList=getData(response);
+                        arrayList = getData(response);
                         currentMatchesAdapter.addAll(arrayList);
                         currentMatchesAdapter.notifyDataSetChanged();
                     }
@@ -117,6 +100,7 @@ public class currentMatch extends Fragment {
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
+
     public ArrayList getData(String response) {
         arrayList = new ArrayList();
         JSONTokener jsonTokener = new JSONTokener(response);
@@ -128,8 +112,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if(localData.getBoolean("matchStarted")==false)
-                {
+                if (localData.getBoolean("matchStarted") == false) {
                     continue;
                 }
                 currentLiveMatches data = new currentLiveMatches();
@@ -149,11 +132,12 @@ public class currentMatch extends Fragment {
 
         return arrayList;
     }
+
     class profileadapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return  arrayList.size();
+            return arrayList.size();
         }
 
         @Override
@@ -168,13 +152,12 @@ public class currentMatch extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-          if(convertView==null)
-            {
-                convertView= LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout,parent,false);
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout, parent, false);
             }
-            TextView oneVsTwo=(TextView)convertView.findViewById(R.id.oneVsTwo);
-            currentLiveMatches matches= (currentLiveMatches) (currentLiveMatches) arrayList.get(position);
-            oneVsTwo.setText((int) matches.getUnique_ID()+"");
+            TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
+            currentLiveMatches matches = (currentLiveMatches) (currentLiveMatches) arrayList.get(position);
+            oneVsTwo.setText((int) matches.getUnique_ID() + "");
 //            setCoverage=(Button) convertView.findViewById(R.id.setCoverage);
 //            setCoverage.setOnClickListener(this);
             return convertView;

@@ -19,9 +19,9 @@ import pojo.userLocal;
 
 public class helper extends SQLiteOpenHelper {
 
-    public static final String dataBaseName="Famous";
-    public static final String table="People";
-    public static final int Version=1;
+    public static final String dataBaseName = "Famous";
+    public static final String table = "People";
+    public static final int Version = 1;
     public static final String UNIQUE_ID = BaseColumns._ID;
     public static final String MATCHID = "MATCHID";
     public static final String STATUS = "STATUS";
@@ -43,55 +43,56 @@ public class helper extends SQLiteOpenHelper {
 
     public helper(Context context) {
         super(context, dataBaseName, null, Version);
-        this.context=context;
+        this.context = context;
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(PeopleTable);
         Log.d("Database Table", "Database tables created");
-        Toast.makeText(context, "Dataabse create "+db.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Dataabse create " + db.toString(), Toast.LENGTH_SHORT).show();
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
-    public long insertData(String MatchID, String Status, ArrayList numbers, String Email, String time)
-    {
+
+    public long insertData(String MatchID, String Status, ArrayList numbers, String Email, String time) {
         SQLiteDatabase database = this.getWritableDatabase();
-        long id=0;
+        long id = 0;
 
-        for (int i = 0; i <numbers.size() ; i++) {
+        for (int i = 0; i < numbers.size(); i++) {
 
-            ContentValues contentValues=new ContentValues();
-            contentValues.put(MATCHID,MatchID);
-            contentValues.put(NUMBER,numbers.get(i).toString());
-            contentValues.put(TIME,time);
-            contentValues.put(EMAIL,Email);
-            contentValues.put(STATUS,Status);
-             id=database.insert(table,null,contentValues);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MATCHID, MatchID);
+            contentValues.put(NUMBER, numbers.get(i).toString());
+            contentValues.put(TIME, time);
+            contentValues.put(EMAIL, Email);
+            contentValues.put(STATUS, Status);
+            id = database.insert(table, null, contentValues);
         }
-        Toast.makeText(context, "primary id "+id, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "primary id " + id, Toast.LENGTH_SHORT).show();
         database.close();
         return id;
     }
-    public void deleteAll()
-    {
-        SQLiteDatabase database=this.getReadableDatabase();
-        database.delete(table,null,null);
+
+    public void deleteAll() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        database.delete(table, null, null);
         database.close();
     }
-    public ArrayList showRecord()
-    {
-        ArrayList arrayList=new ArrayList();
-        String Select="Select *from "+table;
-        SQLiteDatabase database=this.getReadableDatabase();
-        Cursor cursor=database.rawQuery(Select,null);
-        while(cursor.moveToNext())
-        {
-            int matchIdLocal=cursor.getColumnIndex(MATCHID);
-            int numberLocalPosition=cursor.getColumnIndex(NUMBER);
-            int timeLocalPosiiton=cursor.getColumnIndex(TIME);
-            int emailLocalPosition=cursor.getColumnIndex(EMAIL);
-            int statusLocalPosition=cursor.getColumnIndex(STATUS);
+
+    public ArrayList showRecord() {
+        ArrayList arrayList = new ArrayList();
+        String Select = "Select *from " + table;
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(Select, null);
+        while (cursor.moveToNext()) {
+            int matchIdLocal = cursor.getColumnIndex(MATCHID);
+            int numberLocalPosition = cursor.getColumnIndex(NUMBER);
+            int timeLocalPosiiton = cursor.getColumnIndex(TIME);
+            int emailLocalPosition = cursor.getColumnIndex(EMAIL);
+            int statusLocalPosition = cursor.getColumnIndex(STATUS);
             // create instance
             userLocal user = new userLocal();
             // set data

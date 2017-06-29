@@ -11,17 +11,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.abdull.scorebatao.Activity.services;
 import com.example.abdull.scorebatao.Activity.PersonsDetail;
+import com.example.abdull.scorebatao.Activity.services;
 import com.example.abdull.scorebatao.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,7 +40,7 @@ import utility.utilityConstant;
  */
 
 
-public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickListener {
     public boolean checkOnOf;
     public boolean checkOFF;
     ArrayList liveMatches = new ArrayList();
@@ -135,7 +133,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 //                    }
                     if (!checkOnOf) {
                         // yaha se copy kia he hum ne
-                       // final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
+                        // final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
                         String Request;
                         if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
 
@@ -279,7 +277,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                         }
                         // yaha tak copy kia he hum ne  niche wale else se
 
-
                     }
 
 
@@ -384,14 +381,9 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        //  Toast.makeText(getContext(), "Position is "+position, Toast.LENGTH_SHORT).show();
-        utilityConstant.spinnerItemPosition = position;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
+//    @Override
+//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//        //  Toast.makeText(getContext(), "Position is "+position, Toast.LENGTH_SHORT).show();
+//        utilityConstant.spinnerItemPosition = position;
+//    }
 }
