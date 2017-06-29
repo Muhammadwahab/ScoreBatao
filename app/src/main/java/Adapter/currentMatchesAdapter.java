@@ -83,7 +83,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
         setCoverage.setOnClickListener(this);
         setCoverage.setTag(position);
         // Spinner element
-        final Spinner spinner = (Spinner) convertView.findViewById(R.id.spinner2);
         OnOff = (Switch) (Switch) convertView.findViewById(R.id.scset);
         final helper helper = new helper(context);
         ArrayList local = helper.showRecord();
@@ -136,7 +135,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 //                    }
                     if (!checkOnOf) {
                         // yaha se copy kia he hum ne
-                        final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
+                       // final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
                         String Request;
                         if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
 
@@ -171,7 +170,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             StringBuilder stringBuilder = new StringBuilder(reference);
                                             String refvalue = stringBuilder.replace(0, 40, "").toString();
                                             DatabaseReference getMatchID = database.getReference(refvalue);
-                                            getMatchID.child("time").setValue(time);
+                                            getMatchID.child("time").setValue("2");
                                             getMatchID.child("status").setValue("on");
                                             getMatchID.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
@@ -192,7 +191,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                                                     helper insert = new helper(context);
                                                     Intent intent = ((Activity) context).getIntent();
-                                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", "On", numbers, intent.getStringExtra("Email"), time);
+                                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", "On", numbers, intent.getStringExtra("Email"), "2");
                                                     if (idCheck != -1) {
                                                         Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
                                                         ((Activity) context).startService(new Intent(getContext(), services.class));
@@ -234,7 +233,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                             Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
                             String id = "matchID-" + matches.getUnique_ID();
                             DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                            databaseReference.child("time").setValue(time);
+                            databaseReference.child("time").setValue("2");
                             databaseReference.child("status").setValue("on");
                             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -361,15 +360,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                 }
             }
         });
-
-// Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.timeofMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
 
         return convertView;
