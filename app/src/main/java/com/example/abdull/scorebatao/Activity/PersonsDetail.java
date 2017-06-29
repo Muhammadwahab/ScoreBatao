@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pojo.Detail;
 import utility.utilityConstant;
 
 public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
@@ -216,22 +217,13 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             case R.id.Logout:
                 String verify = verifySignInMethod();
                 if (verify.equalsIgnoreCase(utilityConstant.facebook)) {
-                    startActivity(new Intent(PersonsDetail.this, MainActivity.class));
+
                     LoginManager.getInstance().logOut();
-                    SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
-                    preferences.edit().remove(utilityConstant.requestCatche).commit();
-                    preferences.edit().remove(utilityConstant.emailRequest).commit();
-                    preferences.edit().remove(utilityConstant.email).commit();
-                    preferences.edit().remove(utilityConstant.signInMethod).commit();
+                    clearData(); // clear all temporay data urls
                 } else if (verify.equalsIgnoreCase(utilityConstant.custom)) {
                     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
                     firebaseAuth.signOut();
-                    SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
-                    preferences.edit().remove(utilityConstant.requestCatche).commit();
-                    preferences.edit().remove(utilityConstant.emailRequest).commit();
-                    preferences.edit().remove(utilityConstant.email).commit();
-                    preferences.edit().remove(utilityConstant.signInMethod).commit();
-                    startActivity(new Intent(PersonsDetail.this, MainActivity.class));
+                   clearData();
                 }
                 return true;
             default:
@@ -260,11 +252,12 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.activity_add_persons, null);
 
+        final EditText name = (EditText) dialogView.findViewById(R.id.phoneName); //here
         final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
         final Button save = (Button) dialogView.findViewById(R.id.Save); //here
         final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
         // Spinner element
-        final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
+        // final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
         // radio buttons
         RadioButton Interval = (RadioButton) dialogView.findViewById(R.id.radio_interval);
         RadioButton Event = (RadioButton) dialogView.findViewById(R.id.radio_event);
@@ -280,16 +273,6 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
         // horizontal layout for buttons
         horizontalLinearButtons = (LinearLayout) dialogView.findViewById(R.id.horizontalButton);
-
-
-// Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.timeofMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,11 +290,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 final String phoneNumber = PhoneNumber.getText().toString().trim();
                 Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
                 Matcher m = p.matcher(phoneNumber);
-                boolean b = m.matches();
-                if (!b) {
-                    Toast.makeText(PersonsDetail.this, "Invalid PhoneNumber", Toast.LENGTH_SHORT).show();
+                if (!m.matches()) {
+                    showToast("Invalid PhoneNumber");
 
-                    ///Toast.makeText(PersonsDetail.this, "item is " + spinner.getItemAtPosition(utilityConstant.spinnerItemPosition), Toast.LENGTH_SHORT).show();
                 } else {
                     String Request;
                     if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
@@ -334,8 +315,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
-                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(spinner.getItemAtPosition(utilityConstant.spinnerItemPosition) + "-OFF");
-                                        Toast.makeText(PersonsDetail.this, "Referecne is " + databaseReference.toString(), Toast.LENGTH_LONG).show();
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        // Toast.makeText(PersonsDetail.this, "Referecne is " + databaseReference.toString(), Toast.LENGTH_LONG).show();
+                                        showToast("Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
                                         editor.commit();
@@ -353,22 +335,16 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                 Log.w("Read Failed", "Failed to read value.", error.toException());
                             }
                         });
-
-
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
-                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(spinner.getItemAtPosition(utilityConstant.spinnerItemPosition) + "-OFF");
-
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
                     }
-
                 }
             }
         });
-
         builder.setView(dialogView);
         AlertDialog dialogUpdate = builder.create();
         dialogUpdate.show();
-
     }
 
     @Override
@@ -422,54 +398,75 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
             if (isChecked) {
                 intervalSpinner = new Spinner(this);
-                // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.timeofMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
+                ArrayAdapter<CharSequence> adapter = getAdapter(R.array.timeofMatch);
+                utilityConstant.UPDATE = utilityConstant.INTEVAL;
+                utilityConstant.STATUS = utilityConstant.ON;
                 intervalSpinner.setAdapter(adapter);
                 linearLayout.removeView(eventSpinner);
+                eventSpinner = null;
                 linearLayout.addView(intervalSpinner);
                 linearLayout.removeView(horizontalLinearButtons);
                 linearLayout.addView(horizontalLinearButtons);
                 horizontalLinearButtons.setVisibility(View.VISIBLE);
+                intervalSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
             }
 
-            Toast.makeText(this, "Interval", Toast.LENGTH_SHORT).show();
+            showToast("Interval");
         } else if (v.getId() == R.id.radio_event) {
 
             if (isChecked) {
                 eventSpinner = new Spinner(this);
-                // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                        R.array.EventOfMatch, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
+                ArrayAdapter<CharSequence> adapter = getAdapter(R.array.EventOfMatch);
+                utilityConstant.UPDATE = utilityConstant.EVENT;
+                utilityConstant.STATUS = utilityConstant.ON;
                 eventSpinner.setAdapter(adapter);
                 linearLayout.removeView(intervalSpinner);
+                intervalSpinner = null;
                 linearLayout.addView(eventSpinner);
                 linearLayout.removeView(horizontalLinearButtons);
                 linearLayout.addView(horizontalLinearButtons);
                 horizontalLinearButtons.setVisibility(View.VISIBLE);
+                eventSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
             }
-
-
-            Toast.makeText(this, "Event", Toast.LENGTH_SHORT).show();
         } else {
+
             if (isChecked) {
                 linearLayout.removeView(eventSpinner);
                 linearLayout.removeView(intervalSpinner);
-                horizontalLinearButtons.setVisibility(View.GONE);
-
+                eventSpinner = null;
+                intervalSpinner = null;
+                horizontalLinearButtons.setVisibility(View.VISIBLE);
+                utilityConstant.STATUS = utilityConstant.OFF;
+                utilityConstant.UPDATE = "update " + utilityConstant.OFF;
             }
-            Toast.makeText(this, "OFF", Toast.LENGTH_SHORT).show();
-
-
         }
+    }
 
+    Spinner getSpinner() {
+        if (intervalSpinner == null)
+            return eventSpinner;
+        return intervalSpinner;
+    }
 
+    void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    ArrayAdapter getAdapter(int arrayID) {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                arrayID, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
+    }
+    void clearData()
+    {
+        SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
+        preferences.edit().remove(utilityConstant.requestCatche).commit();
+        preferences.edit().remove(utilityConstant.emailRequest).commit();
+        preferences.edit().remove(utilityConstant.email).commit();
+        preferences.edit().remove(utilityConstant.signInMethod).commit();
+        startActivity(new Intent(PersonsDetail.this, MainActivity.class));
     }
 }

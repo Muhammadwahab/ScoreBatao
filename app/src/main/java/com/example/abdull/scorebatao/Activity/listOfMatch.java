@@ -57,24 +57,15 @@ public class listOfMatch extends AppCompatActivity {
                 String verify=verifySignInMethod();
                 if(verify.equalsIgnoreCase(utilityConstant.facebook))
                 {
-                    startActivity(new Intent(listOfMatch.this,MainActivity.class));
+
                     LoginManager.getInstance().logOut();
-                    SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
-                    preferences.edit().remove(utilityConstant.requestCatche).commit();
-                    preferences.edit().remove(utilityConstant.emailRequest).commit();
-                    preferences.edit().remove(utilityConstant.email).commit();
-                    preferences.edit().remove(utilityConstant.signInMethod).commit();
+                    clearData();
                 }
                 else if(verify.equalsIgnoreCase(utilityConstant.custom))
                 {
                     FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
                     firebaseAuth.signOut();
-                    SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
-                    preferences.edit().remove(utilityConstant.requestCatche).commit();
-                    preferences.edit().remove(utilityConstant.emailRequest).commit();
-                    preferences.edit().remove(utilityConstant.email).commit();
-                    preferences.edit().remove(utilityConstant.signInMethod).commit();
-                    startActivity(new Intent(listOfMatch.this,MainActivity.class));
+                    clearData();
 
                 }
 
@@ -98,7 +89,15 @@ public class listOfMatch extends AppCompatActivity {
 
         return "null";
     }
-
+    void clearData()
+    {
+        SharedPreferences preferences = getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
+        preferences.edit().remove(utilityConstant.requestCatche).commit();
+        preferences.edit().remove(utilityConstant.emailRequest).commit();
+        preferences.edit().remove(utilityConstant.email).commit();
+        preferences.edit().remove(utilityConstant.signInMethod).commit();
+        startActivity(new Intent(listOfMatch.this, MainActivity.class));
+    }
 }
 
 

@@ -8,7 +8,7 @@
     android:id="@+id/insertCoverge"
     tools:context="com.example.abdull.scorebatao.Activity.AddPersons">
     <EditText
-        android:id="@+id/name"
+        android:id="@+id/phoneName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Name"
@@ -21,11 +21,11 @@
         android:hint="Phone Number"
         android:inputType="phone" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-       />
+    <!--<Spinner-->
+        <!--android:id="@+id/spinner"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+       <!--/>-->
 
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
