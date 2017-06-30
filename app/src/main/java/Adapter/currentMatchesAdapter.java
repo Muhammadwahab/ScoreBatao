@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import Database.helper;
 import pojo.currentLiveMatches;
+import pojo.localdata;
 import pojo.userLocal;
 import utility.utilityConstant;
 
@@ -52,6 +53,11 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     DatabaseReference myRef = database.getReference("users");
     currentLiveMatches matches;
     Switch OnOff;
+
+    String name;
+    String request ;
+    String Status;
+    String update;
 
     public currentMatchesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList live) {
         super(context, resource, live);
@@ -168,9 +174,10 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             StringBuilder stringBuilder = new StringBuilder(reference);
                                             String refvalue = stringBuilder.replace(0, 40, "").toString();
                                             DatabaseReference getMatchID = database.getReference(refvalue);
-                                            getMatchID.child("time").setValue("2");
-                                            getMatchID.child("status").setValue("on");
+                                          //  getMatchID.child("time").setValue("2");
+                                            getMatchID.child("userstatus").setValue("on");
                                             getMatchID.addListenerForSingleValueEvent(new ValueEventListener() {
+
                                                 @Override
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -178,10 +185,16 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                     ArrayList numbers = new ArrayList();
                                                     for (DataSnapshot phone : childPhoneNumber) {
                                                         String key = phone.getKey();
-                                                        if (key.equalsIgnoreCase("status") || key.equalsIgnoreCase("time")) {
+                                                        if (key.equalsIgnoreCase("userstatus") || key.equalsIgnoreCase("time")) {
 
-                                                        } else {
-                                                            numbers.add(key);
+                                                        }
+                                                        else {
+                                                            HashMap numberDetails = (HashMap) phone.getValue();
+                                                              name = (String) numberDetails.get("name");
+                                                              request = (String) numberDetails.get("request");
+                                                              Status = (String) numberDetails.get("status");
+                                                              update = (String) numberDetails.get("update");
+                                                            numbers.add( new localdata(matches.getUnique_ID()+"",Status,key,((Activity) context).getIntent().getStringExtra("Email"),request,utilityConstant.ON,update,name));
                                                         }
 
                                                     }
@@ -189,7 +202,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                                                     helper insert = new helper(context);
                                                     Intent intent = ((Activity) context).getIntent();
-                                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", "On", numbers, intent.getStringExtra("Email"), "2");
+                                                    long idCheck = insert.insertData(numbers);
+                                                    Toast.makeText(context, ""+idCheck, Toast.LENGTH_SHORT).show();
                                                     if (idCheck != -1) {
                                                         Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
                                                         ((Activity) context).startService(new Intent(getContext(), services.class));
@@ -231,8 +245,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                             Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
                             String id = "matchID-" + matches.getUnique_ID();
                             DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                            databaseReference.child("time").setValue("2");
-                            databaseReference.child("status").setValue("on");
+                        //    databaseReference.child("time").setValue("2");
+                            databaseReference.child("userstatus").setValue("on");
                             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -242,24 +256,31 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                     String status = "", times = "";
                                     for (DataSnapshot phone : childPhoneNumber) {
                                         String key = phone.getKey();
-                                        if (key.equalsIgnoreCase("status")) {
+                                        if (key.equalsIgnoreCase("userstatus")) {
                                             status = phone.getValue().toString();
 
                                         } else if (key.equalsIgnoreCase("time")) {
                                             times = phone.getValue().toString();
 
                                         } else {
-                                            numbers.add(key);
+                                            HashMap numberDetails = (HashMap) phone.getValue();
+                                            name = (String) numberDetails.get("name");
+                                            request = (String) numberDetails.get("request");
+                                            Status = (String) numberDetails.get("status");
+                                            update = (String) numberDetails.get("update");
+                                            numbers.add( new localdata(matches.getUnique_ID()+"",Status,key,((Activity) context).getIntent().getStringExtra("Email"),request,utilityConstant.ON,update,name));
 
                                         }
 
                                     }
                                     helper insert = new helper(context);
                                     Intent intent = ((Activity) context).getIntent();
-                                    long idCheck = insert.insertData(matches.getUnique_ID() + "", status, numbers, intent.getStringExtra("Email"), times);
+                                    long idCheck = insert.insertData(numbers);
+                                    Toast.makeText(context, ""+idCheck, Toast.LENGTH_SHORT).show();
+
                                     if (idCheck != -1) {
-                                        Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
-                                        ((Activity) context).startService(new Intent(getContext(), services.class));
+                                       Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
+                                      ((Activity) context).startService(new Intent(getContext(), services.class));
 
                                     } else {
                                         Toast.makeText(context, "Error in Database", Toast.LENGTH_SHORT).show();
@@ -321,7 +342,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference getMatchID = database.getReference(refvalue);
-                                        getMatchID.child("status").setValue("OFF");
+                                        getMatchID.child("userstatus").setValue("OFF");
                                         helper insert = new helper(context);
                                         ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
                                         insert.deleteAll();
@@ -348,7 +369,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                     } else {
                         String id = "matchID-" + matches.getUnique_ID();
                         DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                        databaseReference.child("status").setValue("OFF");
+                        databaseReference.child("userstatus").setValue("OFF");
                         helper insert = new helper(context);
                         ((Activity) context).stopService(new Intent(getContext(), services.class));
                         insert.deleteAll();
@@ -357,8 +378,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                 }
             }
         });
-
-
         return convertView;
     }
 

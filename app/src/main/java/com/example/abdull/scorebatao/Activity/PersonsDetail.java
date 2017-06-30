@@ -126,7 +126,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                     for (DataSnapshot phone : childPhoneNumber) {
                                         String key = phone.getKey();
 
-                                        if (key.equalsIgnoreCase("status")) {
+                                        if (key.equalsIgnoreCase("userstatus")) {
 
                                         } else if (key.equalsIgnoreCase("time")) {
 
@@ -177,7 +177,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                     for (DataSnapshot phone : childPhoneNumber) {
 
                         String key = phone.getKey();
-                        if (key.equalsIgnoreCase("status")) {
+                        if (key.equalsIgnoreCase("userstatus")) {
 
                         } else if (key.equalsIgnoreCase("time")) {
 

@@ -64,30 +64,35 @@ public class services extends Service {
 
     @Override
     public void onCreate() {
-        // cancel if already existed
-        if (mTimer != null) {
-            helper=new helper(getApplicationContext());
-            userData=helper.showRecord();
-            userLocal user1= (userLocal) userData.get(0);
-            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
 
-            mTimer.cancel();
-        } else {
-            // recreate new
-            helper=new helper(getApplicationContext());
-            userData=helper.showRecord();
-            userLocal user1= (userLocal) userData.get(0);
-            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
-            mTimer = new Timer();
-            pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
-            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
-            wl.acquire();
-            Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
-//do what you need to do
-        }
-        // schedule task
-       mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(), 0, utilityConstant.NOTIFY_INTERVAL);
-     //   mHandler.postDelayed(new runnable(getApplicationContext(),mHandler),1000);
+        Toast.makeText(this, "On Create", Toast.LENGTH_SHORT).show();
+
+
+//
+//        // cancel if already existed
+//        if (mTimer != null) {
+//            helper=new helper(getApplicationContext());
+//            userData=helper.showRecord();
+//            userLocal user1= (userLocal) userData.get(0);
+//            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
+//
+//            mTimer.cancel();
+//        } else {
+//            // recreate new
+//            helper=new helper(getApplicationContext());
+//            userData=helper.showRecord();
+//            userLocal user1= (userLocal) userData.get(0);
+//            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
+//            mTimer = new Timer();
+//            pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
+//            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+//            wl.acquire();
+//            Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
+////do what you need to do
+//        }
+//        // schedule task
+//       mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(), 0, utilityConstant.NOTIFY_INTERVAL);
+//     //   mHandler.postDelayed(new runnable(getApplicationContext(),mHandler),1000);
 
     }
 
@@ -121,9 +126,10 @@ public class services extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "on Start Command", Toast.LENGTH_SHORT).show();
          helper=new helper(getApplicationContext());
-        userData=helper.showRecord();
-        userLocal user1= (userLocal) userData.get(0);
-        utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
+        ArrayList list=helper.getSpecificRecord();
+//        userData=helper.showRecord();
+//        userLocal user1= (userLocal) userData.get(0);
+//        utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
 
 
         return super.onStartCommand(intent, flags, startId);
@@ -244,8 +250,8 @@ public class services extends Service {
     }
     @Override
     public void onDestroy() {
-        mTimer.cancel();
-        wl.release();
+//        mTimer.cancel();
+       // wl.release();
         Toast.makeText(this, "Service Destroy", Toast.LENGTH_SHORT).show();
     }
 
