@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import pojo.localdata;
 import pojo.userLocal;
+import utility.utilityConstant;
 
 /**
  * Created by abdull on 4/10/17.
@@ -146,6 +147,34 @@ public class helper extends SQLiteOpenHelper {
         database.close();
         return arrayList;
     }
+    public ArrayList getTimerCounts() {
+        String interval="INTERVAL";
+        ArrayList arrayList = new ArrayList();
+        String Select = "Select distinct "+REQUEST+" from " + table+" where "+UPDATE+"='" +interval +"' and "+STATUS+"='" + utilityConstant.ON +"'"+" order by cast("+REQUEST+" as INTEGER)";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(Select,null);
+        String where = UPDATE+"=?";
+        // String[] args = {"INTERVAL"};
+        //   Cursor cursor= database.query(table,null,where,args,null,null,null);
+        while (cursor.moveToNext()) {
+            // create instance
+            localdata user = new localdata();
+            // set data
+//            user.setEmail(cursor.getString(cursor.getColumnIndex(EMAIL)));
+//            user.setMatchID(cursor.getString(cursor.getColumnIndex(MATCHID)));
+//            user.setPhonenumber(cursor.getString(cursor.getColumnIndex(NUMBER)));
+            user.setRequest(cursor.getString(cursor.getColumnIndex(REQUEST)));
+//            user.setStatus(cursor.getString(cursor.getColumnIndex(STATUS)));
+//            user.setUpdate(cursor.getString(cursor.getColumnIndex(UPDATE)));
+//            user.setName(cursor.getString(cursor.getColumnIndex(NAME)));
+//            user.setMatchStatus(cursor.getString(cursor.getColumnIndex(MATCH_STATUS)));
+
+            arrayList.add(user);
+        }
+        database.close();
+        return arrayList;
+    }
+
 //    public void updateRecord(long Position,String name,String inspiration)
 //    {
 //        SQLiteDatabase db = this.getWritableDatabase();

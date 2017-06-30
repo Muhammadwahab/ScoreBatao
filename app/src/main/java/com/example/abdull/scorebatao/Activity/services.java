@@ -35,6 +35,7 @@ import java.util.TimerTask;
 
 import Database.helper;
 import pojo.currentLiveMatches;
+import pojo.localdata;
 import pojo.userLocal;
 import utility.utilityConstant;
 
@@ -47,15 +48,17 @@ public class services extends Service {
 
     helper helper;
     userLocal user;
-    ArrayList userData;
+    ArrayList userData,timerCount;
     String CombineScore="";
 
     // run on another Thread to avoid crash
     private Handler mHandler = new Handler();
+    private Handler hand= new Handler();
     // timer handling
-    private Timer mTimer = null;
+    private Timer mTimer = null,timerArray[];
     PowerManager pm;
     PowerManager.WakeLock wl;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,6 +69,28 @@ public class services extends Service {
     public void onCreate() {
 
         Toast.makeText(this, "On Create", Toast.LENGTH_SHORT).show();
+        helper=new helper(getApplicationContext());
+        timerCount=helper.getTimerCounts();
+
+        timerArray=new Timer[timerCount.size()];
+
+        for (int i=0;i<timerArray.length;i++) {
+            localdata local= (localdata) timerCount.get(i);
+
+            if(timerArray[i]!=null)
+            {
+                timerArray[i].cancel();
+
+            }
+            else
+            {
+                timerArray[i]=new Timer();
+            }
+
+            timerArray[i].scheduleAtFixedRate(new task(local.getRequest()), 0, Long.parseLong(local.getRequest())*60*1000);
+
+        }
+
 
 
 //
@@ -96,6 +121,26 @@ public class services extends Service {
 
     }
 
+ class task extends TimerTask{
+     String request;
+
+     public task(String request) {
+         this.request=request;
+
+     }
+
+     @Override
+     public void run() {
+         hand.post(new Runnable() {
+             @Override
+             public void run() {
+                 Toast.makeText(services.this, "Timer for Request "+request, Toast.LENGTH_SHORT).show();
+             }
+         });
+
+     }
+ }
+
     class TimeDisplayTimerTask extends TimerTask {
 
         @Override
@@ -125,8 +170,8 @@ public class services extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "on Start Command", Toast.LENGTH_SHORT).show();
-         helper=new helper(getApplicationContext());
-        ArrayList list=helper.getSpecificRecord();
+//         helper=new helper(getApplicationContext());
+//         timerCount=helper.getTimerCounts();
 //        userData=helper.showRecord();
 //        userLocal user1= (userLocal) userData.get(0);
 //        utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
@@ -252,7 +297,12 @@ public class services extends Service {
     public void onDestroy() {
 //        mTimer.cancel();
        // wl.release();
-        Toast.makeText(this, "Service Destroy", Toast.LENGTH_SHORT).show();
+        for (int i=0;i<timerArray.length;i++) {
+                timerArray[i].cancel();
+            Toast.makeText(this, "Service Destroy timer number "+i, Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
 }
