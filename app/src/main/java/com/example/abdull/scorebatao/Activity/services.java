@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -22,7 +21,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -34,7 +32,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import Database.helper;
-import pojo.currentLiveMatches;
 import pojo.localdata;
 import pojo.userLocal;
 import utility.utilityConstant;
@@ -48,17 +45,42 @@ public class services extends Service {
 
     helper helper;
     userLocal user;
-    ArrayList userData,timerCount;
-    String CombineScore="";
-
-    // run on another Thread to avoid crash
-    private Handler mHandler = new Handler();
-    private Handler hand= new Handler();
-    // timer handling
-    private Timer mTimer = null,timerArray[];
+    ArrayList userData, timerCount;
+    String CombineScore = "";
     PowerManager pm;
     PowerManager.WakeLock wl;
+    // run on another Thread to avoid crash
+    private Handler mHandler = new Handler();
+    private Handler hand = new Handler();
+    // timer handling
+    private Timer mTimer = null, timerArray[];
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = null;
+
+            switch (getResultCode()) {
+                case Activity.RESULT_OK:
+                    message = "Message sent!";
+                    break;
+                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                    message = "Error. Message not sent.";
+                    break;
+                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                    message = "Error: No service.";
+                    break;
+                case SmsManager.RESULT_ERROR_NULL_PDU:
+                    message = "Error: Null PDU.";
+                    break;
+                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                    message = "Error: Radio off.";
+                    break;
+            }
+
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -68,29 +90,31 @@ public class services extends Service {
     @Override
     public void onCreate() {
 
+        pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
+        wl.acquire();
+        Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
+
         Toast.makeText(this, "On Create", Toast.LENGTH_SHORT).show();
-        helper=new helper(getApplicationContext());
-        timerCount=helper.getTimerCounts();
+        helper = new helper(getApplicationContext());
+        timerCount = helper.getTimerCounts();
 
-        timerArray=new Timer[timerCount.size()];
+        timerArray = new Timer[timerCount.size()];
 
-        for (int i=0;i<timerArray.length;i++) {
-            localdata local= (localdata) timerCount.get(i);
+        for (int i = 0; i < timerArray.length; i++) {
+            localdata local = (localdata) timerCount.get(i);
 
-            if(timerArray[i]!=null)
-            {
+            if (timerArray[i] != null) {
                 timerArray[i].cancel();
 
-            }
-            else
-            {
-                timerArray[i]=new Timer();
+            } else {
+
+                timerArray[i] = new Timer();
             }
 
-            timerArray[i].scheduleAtFixedRate(new task(local.getRequest()), 0, Long.parseLong(local.getRequest())*60*1000);
+            timerArray[i].scheduleAtFixedRate(new task(helper.getSpecificRecord(local.getRequest()), local.getRequest()), 0, Long.parseLong(local.getRequest()) * 60 * 1000);
 
         }
-
 
 
 //
@@ -121,52 +145,6 @@ public class services extends Service {
 
     }
 
- class task extends TimerTask{
-     String request;
-
-     public task(String request) {
-         this.request=request;
-
-     }
-
-     @Override
-     public void run() {
-         hand.post(new Runnable() {
-             @Override
-             public void run() {
-                 Toast.makeText(services.this, "Timer for Request "+request, Toast.LENGTH_SHORT).show();
-             }
-         });
-
-     }
- }
-
-    class TimeDisplayTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            // run on another thread
-            mHandler.post(new Runnable() {
-
-                @Override
-                public void run() {
-//
-                    userLocal userLocal= (pojo.userLocal) userData.get(0);
-                    gettingScore(userLocal.getMatchID());
-
-                }
-
-
-            });
-        }
-
-        private String getDateTime() {
-            // get date time in custom format
-            SimpleDateFormat sdf = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
-            return sdf.format(new Date());
-        }
-    }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "on Start Command", Toast.LENGTH_SHORT).show();
@@ -181,11 +159,10 @@ public class services extends Service {
 
     }
 
-    void gettingScore(String MatchID)
-    {
+    void gettingScore(final String MatchID, final ArrayList data) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        String url ="http://cricapi.com/api/cricketScore?unique_id="+MatchID+"&&apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
+        String url = "http://cricapi.com/api/cricketScore?unique_id=" + MatchID + "&&apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -193,7 +170,7 @@ public class services extends Service {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
-                        getScore(response);
+                        getScore(response, data);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -204,70 +181,37 @@ public class services extends Service {
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String message = null;
-
-            switch (getResultCode()) {
-                case Activity.RESULT_OK:
-                    message = "Message sent!";
-                    break;
-                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                    message = "Error. Message not sent.";
-                    break;
-                case SmsManager.RESULT_ERROR_NO_SERVICE:
-                    message = "Error: No service.";
-                    break;
-                case SmsManager.RESULT_ERROR_NULL_PDU:
-                    message = "Error: Null PDU.";
-                    break;
-                case SmsManager.RESULT_ERROR_RADIO_OFF:
-                    message = "Error: Radio off.";
-                    break;
-            }
-
-            Toast.makeText(getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-        }
-    };
-    public void getScore(String response) {
+    public void getScore(String response, ArrayList data) {
         JSONTokener jsonTokener = new JSONTokener(response);
-        String Score="";
+        String Score = "";
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-                String Team_1=jsonObject.getString("team-1");
-            String Team_2=jsonObject.getString("team-2");
-            String matchType=jsonObject.getString("type");
-            boolean matchStarted=jsonObject.getBoolean("matchStarted");
-            if(matchType.equalsIgnoreCase(utilityConstant.ODI))
-            {
-                matchType="ODI";
+            String Team_1 = jsonObject.getString("team-1");
+            String Team_2 = jsonObject.getString("team-2");
+            String matchType = jsonObject.getString("type");
+            boolean matchStarted = jsonObject.getBoolean("matchStarted");
+            if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
+                matchType = "ODI";
             }
-            if(matchStarted)
-            {
-                 Score=jsonObject.getString("score");
-            }
-            else
-            {
-                Score="Match Not Start";
+            if (matchStarted) {
+                Score = jsonObject.getString("score");
+            } else {
+                Score = "Match Not Start";
             }
 
-            String innings_requirement=jsonObject.getString("innings-requirement");
-             CombineScore=matchType+""+Team_1+"VS"+Team_2+"Score "+Score+""+innings_requirement;
-            ArrayList check=new ArrayList();
-            Toast.makeText(this, "Total"+CombineScore, Toast.LENGTH_SHORT).show();
-            for (int i = 0; i <userData.size() ; i++) {
-                user = (pojo.userLocal) userData.get(i);
-                String[] numbers={"+923471218967","+923471218967"};
-                SmsManager smsManager=SmsManager.getDefault();
-                ArrayList<String> parts =smsManager.divideMessage(CombineScore);
-
-
-
+            String innings_requirement = jsonObject.getString("innings-requirement");
+            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + "Score " + Score + "" + innings_requirement;
+            ArrayList check = new ArrayList();
+            Toast.makeText(this, "Total" + CombineScore, Toast.LENGTH_SHORT).show();
+            for (int i = 0; i < data.size(); i++) {
+                localdata localdata = (pojo.localdata) data.get(i);
+                //  String[] numbers={"+923471218967","+923471218967"};
+                SmsManager smsManager = SmsManager.getDefault();
+                ArrayList<String> parts = smsManager.divideMessage(CombineScore);
                 try {
 
-                    PendingIntent pendingIntent=PendingIntent.getBroadcast(getApplicationContext(),0,new Intent("SMS_SENT"),0);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0);
 
 
 //                        SmsManager.getDefault().sendTextMessage(user.getNumber(),null,
@@ -275,12 +219,11 @@ public class services extends Service {
                     ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
                     ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
 
-                    for (int j = 0; j < parts.size(); j++)
-                    {
+                    for (int j = 0; j < parts.size(); j++) {
                         sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
 
                     }
-                    smsManager.sendMultipartTextMessage(user.getNumber(),null,parts,sentIntents,null);
+                    smsManager.sendMultipartTextMessage(localdata.getPhonenumber(), null, parts, sentIntents, null);
 
                 } catch (Exception e) {
                     AlertDialog.Builder alertDialogBuilder = new
@@ -293,16 +236,66 @@ public class services extends Service {
         }
         registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
     }
+
     @Override
     public void onDestroy() {
 //        mTimer.cancel();
-       // wl.release();
-        for (int i=0;i<timerArray.length;i++) {
-                timerArray[i].cancel();
-            Toast.makeText(this, "Service Destroy timer number "+i, Toast.LENGTH_SHORT).show();
+
+        for (int i = 0; i < timerArray.length; i++) {
+            timerArray[i].cancel();
+            Toast.makeText(this, "Service Destroy timer number " + i, Toast.LENGTH_SHORT).show();
+        }
+        wl.release();
+    }
+
+    class task extends TimerTask {
+        ArrayList Data;
+        String Request;
+
+        public task(ArrayList Data, String Request) {
+            this.Data = Data;
+            this.Request = Request;
+
         }
 
+        @Override
+        public void run() {
+            hand.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(services.this, "Timer for Request " + Request, Toast.LENGTH_SHORT).show();
+                    localdata localdata = (localdata) Data.get(0);
+                    gettingScore(localdata.getMatchID(), Data);
+                }
+            });
 
+        }
+    }
+
+    class TimeDisplayTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            // run on another thread
+            mHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+//
+//                    userLocal userLocal= (pojo.userLocal) userData.get(0);
+//                    gettingScore(userLocal.getMatchID());
+
+                }
+
+
+            });
+        }
+
+        private String getDateTime() {
+            // get date time in custom format
+            SimpleDateFormat sdf = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
+            return sdf.format(new Date());
+        }
     }
 
 }

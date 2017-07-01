@@ -120,10 +120,12 @@ public class helper extends SQLiteOpenHelper {
         database.close();
         return arrayList;
     }
-    public ArrayList getSpecificRecord() {
+    public ArrayList getSpecificRecord(String RequestCheck) {
         String interval="INTERVAL";
         ArrayList arrayList = new ArrayList();
-        String Select = "Select *from " + table+" where "+UPDATE+"='" +interval +"' order by cast("+REQUEST+" as INTEGER)";
+      //  String Select = "Select *from " + table+" where "+UPDATE+"='" +interval +"' order by cast("+REQUEST+" as INTEGER)";
+        String Select = "Select *from " + table+" where "+UPDATE+"='" +interval +"' and "+STATUS+"='" + utilityConstant.ON +"' and "+REQUEST+"='" + RequestCheck +"'";
+
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(Select,null);
         String where = UPDATE+"=?";

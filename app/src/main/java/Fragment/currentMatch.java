@@ -130,7 +130,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if (localData.getBoolean("matchStarted") == false) {
+                if (localData.getBoolean("matchStarted") == true) {
                     continue;
                 }
                 currentLiveMatches data = new currentLiveMatches();
