@@ -1,5 +1,4 @@
 package com.example.abdull.scorebatao.Activity;
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,9 +10,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       // ((Activity)context).startActivity(new Intent(getContext(), services.class));
-      //  startActivity(new Intent(getApplicationContext(), services.class));
-
         Runnable runnable=new Runnable() {
             @Override
             public void run() {

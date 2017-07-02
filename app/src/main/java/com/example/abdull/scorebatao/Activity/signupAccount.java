@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.abdull.scorebatao.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,28 +19,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import pojo.user;
+import utility.utilityConstant;
 
 public class signupAccount extends AppCompatActivity implements View.OnClickListener {
 
     TextView email, password, confirmpassword;
     Button createAccount;
     private FirebaseAuth mAuth;
-    FirebaseDatabase database;
-     DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_account);
 
-        // initilaze firebase
-
         mAuth = FirebaseAuth.getInstance();
-
-
-
-        // initialize views
-
         email = (TextView) findViewById(R.id.EmailIDSignup);
         password = (TextView) findViewById(R.id.passwordsignup);
         confirmpassword = (TextView) findViewById(R.id.confirmpasswordsignup);
@@ -71,14 +61,17 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                                     try {
                                         throw task.getException();
                                     } catch (FirebaseAuthWeakPasswordException e) {
-                                        Toast.makeText(signupAccount.this, "week" + e, Toast.LENGTH_LONG).show();
+                                        utilityConstant.showToast(getApplicationContext(),"week");
 
                                     } catch (FirebaseAuthInvalidCredentialsException e) {
-                                        Toast.makeText(signupAccount.this, "invalid" + e, Toast.LENGTH_LONG).show();
+                                        utilityConstant.showToast(getApplicationContext(),"invalid" + e);
+
                                     } catch (FirebaseAuthUserCollisionException e) {
-                                        Toast.makeText(signupAccount.this, "usercollison" + e, Toast.LENGTH_LONG).show();
+                                        utilityConstant.showToast(getApplicationContext(),"usercollison"+e);
+
                                     } catch (Exception e) {
-                                        Toast.makeText(signupAccount.this, "extra" + e, Toast.LENGTH_LONG).show();
+                                        utilityConstant.showToast(getApplicationContext(),"extra "+e);
+
                                     }
                                 } else {       // get current user
                                     final FirebaseUser firebaseUser = mAuth.getCurrentUser();
@@ -96,8 +89,7 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                               String emailOfFB=firebaseUser.getEmail();
                                 user userData = new user(emailOfFB,"ID-3333");
                                                 myRef.child(userId).setValue(userData);
-
-                                                Toast.makeText(signupAccount.this, "email send to recipeient " + firebaseUser.getEmail(), Toast.LENGTH_LONG).show();
+                                                utilityConstant.showToast(getApplicationContext(),"email send to recipeient ");
                                             }
                                         }
                                     });
@@ -106,8 +98,7 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                         });
             }
         } else {
-            Toast.makeText(signupAccount.this, "password did not match",
-                    Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(getApplicationContext(),"password did not match");
         }
     }
 }

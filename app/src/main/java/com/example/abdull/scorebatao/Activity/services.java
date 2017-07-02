@@ -1,6 +1,7 @@
 package com.example.abdull.scorebatao.Activity;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -10,9 +11,7 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v7.app.AlertDialog;
 import android.telephony.SmsManager;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,20 +19,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.abdull.scorebatao.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import Database.helper;
 import pojo.localdata;
-import pojo.userLocal;
 import utility.utilityConstant;
 
 /**
@@ -44,18 +41,15 @@ public class services extends Service {
     // constant
 
     helper helper;
-    userLocal user;
-    ArrayList userData, timerCount;
+    ArrayList timerCount;
     String CombineScore = "";
     PowerManager pm;
     PowerManager.WakeLock wl;
     // run on another Thread to avoid crash
-    private Handler mHandler = new Handler();
     private Handler hand = new Handler();
     // timer handling
-    private Timer mTimer = null, timerArray[];
+    private Timer timerArray[];
     private BroadcastReceiver receiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = null;
@@ -77,8 +71,7 @@ public class services extends Service {
                     message = "Error: Radio off.";
                     break;
             }
-
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(getApplicationContext(),message);
         }
     };
 
@@ -93,14 +86,15 @@ public class services extends Service {
         pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
         wl.acquire();
-        Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
-
-        Toast.makeText(this, "On Create", Toast.LENGTH_SHORT).show();
+        utilityConstant.showToast(this,"On Create Wake Initialze");
         helper = new helper(getApplicationContext());
         timerCount = helper.getTimerCounts();
-
         timerArray = new Timer[timerCount.size()];
-
+        if(timerCount.size()==0)
+        {
+            stopSelf();
+            stopForeground(true);
+        }
         for (int i = 0; i < timerArray.length; i++) {
             localdata local = (localdata) timerCount.get(i);
 
@@ -113,52 +107,25 @@ public class services extends Service {
             }
 
             timerArray[i].scheduleAtFixedRate(new task(helper.getSpecificRecord(local.getRequest()), local.getRequest()), 0, Long.parseLong(local.getRequest()) * 60 * 1000);
-
         }
-
-
-//
-//        // cancel if already existed
-//        if (mTimer != null) {
-//            helper=new helper(getApplicationContext());
-//            userData=helper.showRecord();
-//            userLocal user1= (userLocal) userData.get(0);
-//            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
-//
-//            mTimer.cancel();
-//        } else {
-//            // recreate new
-//            helper=new helper(getApplicationContext());
-//            userData=helper.showRecord();
-//            userLocal user1= (userLocal) userData.get(0);
-//            utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
-//            mTimer = new Timer();
-//            pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
-//            wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
-//            wl.acquire();
-//            Toast.makeText(this, "Wake Initialze", Toast.LENGTH_SHORT).show();
-////do what you need to do
-//        }
-//        // schedule task
-//       mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(), 0, utilityConstant.NOTIFY_INTERVAL);
-//     //   mHandler.postDelayed(new runnable(getApplicationContext(),mHandler),1000);
-
+        helper.close();
     }
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "on Start Command", Toast.LENGTH_SHORT).show();
-//         helper=new helper(getApplicationContext());
-//         timerCount=helper.getTimerCounts();
-//        userData=helper.showRecord();
-//        userLocal user1= (userLocal) userData.get(0);
-//        utilityConstant.NOTIFY_INTERVAL=Long.parseLong(user1.getTime())*60*1000;
-
-
+        utilityConstant.showToast(this,"on Start Command");
+        // for forground service notification
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("ScoreBatao Running")
+                .setContentText("Match Coverage Start")
+                .setSmallIcon(R.drawable.logo)
+                .setContentIntent(pendingIntent)
+                .setTicker("ScoreBatao")
+                .build();
+        startForeground(1, notification);
         return super.onStartCommand(intent, flags, startId);
-
     }
-
     void gettingScore(final String MatchID, final ArrayList data) {
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
@@ -181,7 +148,6 @@ public class services extends Service {
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
-
     public void getScore(String response, ArrayList data) {
         JSONTokener jsonTokener = new JSONTokener(response);
         String Score = "";
@@ -192,33 +158,24 @@ public class services extends Service {
             String matchType = jsonObject.getString("type");
             boolean matchStarted = jsonObject.getBoolean("matchStarted");
             if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
-                matchType = "ODI";
+                matchType = "ODI ";
             }
             if (matchStarted) {
                 Score = jsonObject.getString("score");
             } else {
-                Score = "Match Not Start";
+                Score = "Match Not Start ";
             }
-
             String innings_requirement = jsonObject.getString("innings-requirement");
             CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + "Score " + Score + "" + innings_requirement;
-            ArrayList check = new ArrayList();
-            Toast.makeText(this, "Total" + CombineScore, Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(this,"Total" + CombineScore);
             for (int i = 0; i < data.size(); i++) {
                 localdata localdata = (pojo.localdata) data.get(i);
-                //  String[] numbers={"+923471218967","+923471218967"};
                 SmsManager smsManager = SmsManager.getDefault();
                 ArrayList<String> parts = smsManager.divideMessage(CombineScore);
                 try {
-
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0);
-
-
-//                        SmsManager.getDefault().sendTextMessage(user.getNumber(),null,
-//                                ""+CombineScore, pendingIntent, null);
                     ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
                     ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
-
                     for (int j = 0; j < parts.size(); j++) {
                         sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
 
@@ -226,9 +183,6 @@ public class services extends Service {
                     smsManager.sendMultipartTextMessage(localdata.getPhonenumber(), null, parts, sentIntents, null);
 
                 } catch (Exception e) {
-                    AlertDialog.Builder alertDialogBuilder = new
-                            AlertDialog.Builder(getApplicationContext());
-
                 }
             }
         } catch (JSONException e) {
@@ -239,15 +193,13 @@ public class services extends Service {
 
     @Override
     public void onDestroy() {
-//        mTimer.cancel();
-
         for (int i = 0; i < timerArray.length; i++) {
             timerArray[i].cancel();
-            Toast.makeText(this, "Service Destroy timer number " + i, Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(this,"Service Destroy timer number " + i);
         }
         wl.release();
+        stopForeground(true);
     }
-
     class task extends TimerTask {
         ArrayList Data;
         String Request;
@@ -257,13 +209,12 @@ public class services extends Service {
             this.Request = Request;
 
         }
-
         @Override
         public void run() {
             hand.post(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(services.this, "Timer for Request " + Request, Toast.LENGTH_SHORT).show();
+                    utilityConstant.showToast(services.this,"Timer for Request "+Request);
                     localdata localdata = (localdata) Data.get(0);
                     gettingScore(localdata.getMatchID(), Data);
                 }
@@ -271,31 +222,4 @@ public class services extends Service {
 
         }
     }
-
-    class TimeDisplayTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            // run on another thread
-            mHandler.post(new Runnable() {
-
-                @Override
-                public void run() {
-//
-//                    userLocal userLocal= (pojo.userLocal) userData.get(0);
-//                    gettingScore(userLocal.getMatchID());
-
-                }
-
-
-            });
-        }
-
-        private String getDateTime() {
-            // get date time in custom format
-            SimpleDateFormat sdf = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
-            return sdf.format(new Date());
-        }
-    }
-
 }

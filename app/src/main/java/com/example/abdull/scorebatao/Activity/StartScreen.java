@@ -3,21 +3,16 @@ package com.example.abdull.scorebatao.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.abdull.scorebatao.R;
 import com.facebook.AccessToken;
@@ -27,7 +22,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,9 +40,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -58,7 +49,7 @@ import utility.utilityConstant;
 
 public class StartScreen extends AppCompatActivity implements View.OnClickListener {
 
-    Button LoginButton, createAccount,forgetButton;
+    Button LoginButton, createAccount, forgetButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private TextView email;
@@ -66,7 +57,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
     private com.facebook.login.widget.LoginButton loginButton;
     private CallbackManager callbackManager;
     private SharedPreferences sharedpreferences;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,17 +82,14 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         // facebok login code
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-        loginButton = (LoginButton)findViewById(R.id.login_button);
-
+        loginButton = (LoginButton) findViewById(R.id.login_button);
         callbackManager = CallbackManager.Factory.create();
 
         // Callback registration
 
         //  LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
         loginButton.setReadPermissions(Arrays.asList("public_profile", "user_friends", "email", "user_birthday"));
-
-
-        final GraphRequest.GraphJSONObjectCallback graphJSONObjectCallback=new GraphRequest.GraphJSONObjectCallback() {
+        final GraphRequest.GraphJSONObjectCallback graphJSONObjectCallback = new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -111,8 +98,8 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
                 try {
                     // user insert
-                    final String emailOfFB=object.getString("email").toString();
-                    sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES,Context.MODE_PRIVATE);
+                    final String emailOfFB = object.getString("email").toString();
+                    sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedpreferences.edit();
 
                     editor.putString(utilityConstant.email, emailOfFB);
@@ -123,44 +110,40 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                             // This method is called once with the initial value and again
                             // whenever data at this location is updated.
                             Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
-                            boolean checkFb=false;
+                            boolean checkFb = false;
 
                             for (DataSnapshot child : childrenData) {
-//                    DatabaseReference databaseReference=child.getRef();
-//                    databaseReference.
+//
                                 HashMap hashMap = (HashMap) child.getValue();
                                 String email = (String) hashMap.get("email");
                                 if (email.equalsIgnoreCase(emailOfFB)) {
-                                    checkFb=true;
+                                    checkFb = true;
                                     break;
                                     // break when email address find
                                 }
 
 
                             }
-                            if(checkFb)
-                            {
+                            if (checkFb) {
                                 // move to mathes screen
                                 Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
-                                ListOFScreen.putExtra("Email",emailOfFB);
+                                ListOFScreen.putExtra("Email", emailOfFB);
                                 startActivity(ListOFScreen);
                                 signInMethod(utilityConstant.facebook);
                                 finish();
-                                Toast.makeText(getApplicationContext(), "Sign In Successfully using Fb ", Toast.LENGTH_LONG).show();
-                            }
-                            else
-                            {
+                                utilityConstant.showToast(getApplicationContext(), "Sign In Successfully using Fb ");
+                            } else {
 
-                                user user = new user(emailOfFB,"ID-3333");
+                                user user = new user(emailOfFB, "ID-3333");
                                 myRef.child(userId).setValue(user);
 
                                 // move to mathes screen
                                 Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
-                                ListOFScreen.putExtra("Email",emailOfFB);
+                                ListOFScreen.putExtra("Email", emailOfFB);
                                 startActivity(ListOFScreen);
                                 signInMethod(utilityConstant.facebook);
                                 finish();
-                                Toast.makeText(getApplicationContext(), "Sign In Successfully using Fb ", Toast.LENGTH_LONG).show();
+                                utilityConstant.showToast(getApplicationContext(), "Sign In Successfully using Fb ");
 
                             }
 
@@ -174,7 +157,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                     });
 
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -186,8 +168,8 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                     public void onSuccess(LoginResult loginResult) {
                         // App code
                         GraphRequest request = GraphRequest.newMeRequest(
-                                loginResult.getAccessToken(),graphJSONObjectCallback);
-                        Log.d("request",request.toString());
+                                loginResult.getAccessToken(), graphJSONObjectCallback);
+                        Log.d("request", request.toString());
                         Bundle parameters = new Bundle();
                         parameters.putString("fields", "id,first_name,last_name,name,link,gender,birthday,email");
                         request.setParameters(parameters);
@@ -206,7 +188,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                 });
 
 
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -217,22 +198,24 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
                     //check verification
                     if (!user.isEmailVerified()) {
-                        Toast.makeText(StartScreen.this, "Please Verify email=" + user.getEmail(), Toast.LENGTH_SHORT).show();
+                        utilityConstant.showToast(getApplicationContext(), "Please Verify Email");
                     } else {
                         // move to mathes screen
                         Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
-                        ListOFScreen.putExtra("Email",user.getEmail());
+                        ListOFScreen.putExtra("Email", user.getEmail());
                         startActivity(ListOFScreen);
                         finish();
                         signInMethod(utilityConstant.custom);
-                        Toast.makeText(getApplicationContext(), "Sign In Successfully ", Toast.LENGTH_LONG).show();
+                        utilityConstant.showToast(getApplicationContext(), "Sign In Successfully");
+
 
                     }
 
                 } else {
                     // User is signed out
                     Log.d("singOUT", "onAuthStateChanged:signed_out");
-                    Toast.makeText(getApplicationContext(), "Sign In out ", Toast.LENGTH_LONG).show();
+                    utilityConstant.showToast(getApplicationContext(), "Sign out");
+
                 }
                 // ...
             }
@@ -242,9 +225,9 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         email = (TextView) findViewById(R.id.emailIDsignin);
         password = (TextView) findViewById(R.id.passwordsignin);
 
-        LoginButton=(Button)findViewById(R.id.loginID);
+        LoginButton = (Button) findViewById(R.id.loginID);
         createAccount = (Button) findViewById(R.id.createaccount);
-        forgetButton=(Button)findViewById(R.id.forget);
+        forgetButton = (Button) findViewById(R.id.forget);
         LoginButton.setOnClickListener(this);
         createAccount.setOnClickListener(this);
         forgetButton.setOnClickListener(this);
@@ -252,10 +235,10 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        if(v.equals(LoginButton))
-        {
+        if (v.equals(LoginButton)) {
             if (email.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
-                Toast.makeText(this, "Empty Field", Toast.LENGTH_SHORT).show();
+                utilityConstant.showToast(getApplicationContext(), "Empty Field");
+
             } else {
                 mAuth.signInWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -270,10 +253,9 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                     throw task.getException();
 
                                 } catch (FirebaseAuthInvalidUserException e) {
-                                    Toast.makeText(StartScreen.this, "" + e, Toast.LENGTH_SHORT).show();
+                                    utilityConstant.showToast(getApplicationContext(), "" + e);
                                 } catch (FirebaseAuthInvalidCredentialsException e) {
-                                    Toast.makeText(StartScreen.this, "" + e.getErrorCode(), Toast.LENGTH_SHORT).show();
-
+                                    utilityConstant.showToast(getApplicationContext(), "" + e);
                                 } catch (Exception e) {
 
                                 }
@@ -282,7 +264,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                     Log.w("signin", "signInWithEmail:failed", task.getException());
                                 }
 
-                                // ...
                             }
                         });
 
@@ -291,10 +272,8 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         } else if (v.equals(createAccount)) {
             Intent ListOFScreen = new Intent(StartScreen.this, signupAccount.class);
             startActivity(ListOFScreen);
-        }
-        else if(v.equals(forgetButton))
-        {
-           postDailog();
+        } else if (v.equals(forgetButton)) {
+            postDailog();
         }
     }
 
@@ -302,26 +281,23 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
-         //Check if user is signed in (non-null) and update UI accordingly.
+        //Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-       // Toast.makeText(this, "On Start"+currentUser.getEmail(), Toast.LENGTH_SHORT).show();
 
-        AccessToken accessToken=AccessToken.getCurrentAccessToken();
-        if(accessToken!=null)
-        {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null) {
             sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-            String Email = sharedpreferences.getString(utilityConstant.email,"not found");
+            String Email = sharedpreferences.getString(utilityConstant.email, "not found");
             Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
-            ListOFScreen.putExtra("Email",Email);
+            ListOFScreen.putExtra("Email", Email);
             signInMethod(utilityConstant.facebook);
             startActivity(ListOFScreen);
-            Toast.makeText(getApplicationContext(), "Sign In Successfully Using Fb ", Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-           // Toast.makeText(this, "Fb Not Sign In ", Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(getApplicationContext(), "Sign In Successfully using Fb ");
+        } else {
+            // Toast.makeText(this, "Fb Not Sign In ", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -330,12 +306,12 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         }
 
     }
+
     private void postDailog() {
 
-        final AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LayoutInflater inflater = getLayoutInflater();
-
 
 
         final View dialogView = inflater.inflate(R.layout.dailog, null);
@@ -360,48 +336,40 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(),"Reset Email send to user "+email.getText().toString().trim(),Toast.LENGTH_LONG).show();
-                                }
-                                else
-                                {
+                                    utilityConstant.showToast(getApplicationContext(), "Reset Email send to user " + email.getText().toString().trim());
+
+                                } else {
                                     try {
                                         throw task.getException();
 
                                     } catch (FirebaseAuthInvalidUserException e) {
-                                        Toast.makeText(StartScreen.this, "no email in database found " + e.getErrorCode(), Toast.LENGTH_SHORT).show();
+                                        utilityConstant.showToast(getApplicationContext(), "no email in database found " + e.getErrorCode());
                                     } catch (FirebaseAuthInvalidCredentialsException e) {
-                                        Toast.makeText(StartScreen.this, "Incorrect Credential " + e.getErrorCode(), Toast.LENGTH_SHORT).show();
+                                        utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getErrorCode());
 
                                     } catch (Exception e) {
-                                        Toast.makeText(StartScreen.this, "Invalid Email " + e, Toast.LENGTH_SHORT).show();
+                                        utilityConstant.showToast(getApplicationContext(), "Invalid Email " + e.getMessage());
+
 
                                     }
 
                                 }
                             }
                         });
-
-
             }
         });
-
-
-
-
         builder.setView(dialogView);
-
-        AlertDialog dialogUpdate=builder.create();
+        AlertDialog dialogUpdate = builder.create();
         dialogUpdate.show();
-
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void signInMethod(String SigninMethod)
-    {
+    public void signInMethod(String SigninMethod) {
         sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
 

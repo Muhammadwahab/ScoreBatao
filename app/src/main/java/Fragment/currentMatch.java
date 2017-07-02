@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 
 import Adapter.currentMatchesAdapter;
 import pojo.currentLiveMatches;
+import utility.utilityConstant;
 
 /**
  * Created by abdull on 3/23/17.
@@ -38,7 +38,6 @@ import pojo.currentLiveMatches;
 
 public class currentMatch extends Fragment {
     ListView listView;
-    currentLiveMatches liveMatches[];
     private ArrayList arrayList = new ArrayList();
     View view;
     ViewGroup container;
@@ -48,21 +47,15 @@ public class currentMatch extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.container = container;
-        Toast.makeText(getActivity(), "Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"), Toast.LENGTH_SHORT).show();
+        utilityConstant.showToast(getContext(),"Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"));
         view = LayoutInflater.from(getContext()).inflate(R.layout.current_match, container, false);
         listView = (ListView) view.findViewById(R.id.curretListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 currentLiveMatches matches = (currentLiveMatches) arrayList.get(position);
-
-                Toast.makeText(getContext(), "id is " + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
             }
         });
-        // currentMatchesAdapter=new currentMatchesAdapter(getActivity(),0,arrayList);
-        // profileadapter profileadapter=new profileadapter();
-
-
         return view;
     }
 
@@ -77,16 +70,12 @@ public class currentMatch extends Fragment {
 
 
     void gettingMatches() {
-        // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = "http://cricapi.com/api/matches?apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
-
-// Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         currentMatchesAdapter.clear();
                         arrayList = getData(response);
                         currentMatchesAdapter.addAll(arrayList);
@@ -95,7 +84,7 @@ public class currentMatch extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Error"+error, Toast.LENGTH_SHORT).show();
+                utilityConstant.showToast(getContext(),"Error");
 
             }
         });
@@ -115,14 +104,12 @@ public class currentMatch extends Fragment {
 
             }
         });
-// Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
     public ArrayList getData(String response) {
         arrayList = new ArrayList();
         JSONTokener jsonTokener = new JSONTokener(response);
-
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
             JSONArray arrayOfMatches = jsonObject.getJSONArray("matches");
@@ -130,7 +117,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if (localData.getBoolean("matchStarted") == true) {
+                if (localData.getBoolean("matchStarted") == false) {
                     continue;
                 }
                 currentLiveMatches data = new currentLiveMatches();
@@ -142,43 +129,9 @@ public class currentMatch extends Fragment {
                 arrayList.add(data);
 
             }
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return arrayList;
-    }
-
-    class profileadapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return arrayList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout, parent, false);
-            }
-            TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
-            currentLiveMatches matches = (currentLiveMatches) (currentLiveMatches) arrayList.get(position);
-            oneVsTwo.setText((int) matches.getUnique_ID() + "");
-//            setCoverage=(Button) convertView.findViewById(R.id.setCoverage);
-//            setCoverage.setOnClickListener(this);
-            return convertView;
-        }
     }
 }

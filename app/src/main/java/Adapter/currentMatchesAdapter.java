@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.abdull.scorebatao.Activity.PersonsDetail;
 import com.example.abdull.scorebatao.Activity.services;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import Database.helper;
 import pojo.currentLiveMatches;
 import pojo.localdata;
-import pojo.userLocal;
 import utility.utilityConstant;
 
 /**
@@ -55,7 +53,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     Switch OnOff;
 
     String name;
-    String request ;
+    String request;
     String Status;
     String update;
 
@@ -70,18 +68,14 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        userLocal check = null;
-
-
+        localdata check = null;
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout, parent, false);
-
 
         storeUserRequest = ((Activity) context).getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
         matches = (currentLiveMatches) (currentLiveMatches) liveMatches.get(position);
         matchID = matches.getUnique_ID();
 
-        // oneVsTwo.setText(matches.getTeamOne()+" VS "+matches.getTeamTwo());
         oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
         setCoverage = (Button) convertView.findViewById(R.id.setCoverage);
         setCoverage.setOnClickListener(this);
@@ -93,7 +87,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
 
         if (local.size() != 0) {
-            check = (userLocal) local.get(0);
+            check = (localdata) local.get(0);
             if (check.getMatchID().equalsIgnoreCase(String.valueOf(matchID))) {
 
                 OnOff.setChecked(true);
@@ -102,10 +96,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
             } else {
 
-                //OnOff.setChecked(false);
-                //checkOFF=true;
-                //  OnOff.setOnCheckedChangeListener(null);
-                //  OnOff.setChecked(false);
             }
         }
 
@@ -116,30 +106,9 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 final currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) buttonView.getTag());
-                Toast.makeText(context, "onoff id " + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
+                utilityConstant.showToast(context, "onoff id ");
                 if (isChecked) {
-
-                    // this is for validation
-
-//                    // The toggle is enabled
-//                    helper checkUniqueCoverage=new helper(context);
-//                    ArrayList data=checkUniqueCoverage.showRecord();
-//                    if(data.size()>0)
-//                    {
-//                        Toast.makeText(context, "You Only Allowed To set One Coveerage OF match", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                    else if(data.size()==0)
-//                    {
-//                        Toast.makeText(context, "Please Insert Some Number to Start Coverage", Toast.LENGTH_SHORT).show();
-//                    }
-//                    else
-//                    {
-//
-//                    }
                     if (!checkOnOf) {
-                        // yaha se copy kia he hum ne
-                        // final String time = (String) spinner.getItemAtPosition(utilityConstant.spinnerItemPosition);
                         String Request;
                         if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
 
@@ -151,8 +120,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                     Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
 
                                     for (DataSnapshot child : childrenData) {
-//                    DatabaseReference databaseReference=child.getRef();
-//                    databaseReference.
                                         HashMap hashMap = (HashMap) child.getValue();
                                         final String email = (String) hashMap.get("email");
 
@@ -174,7 +141,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             StringBuilder stringBuilder = new StringBuilder(reference);
                                             String refvalue = stringBuilder.replace(0, 40, "").toString();
                                             DatabaseReference getMatchID = database.getReference(refvalue);
-                                          //  getMatchID.child("time").setValue("2");
                                             getMatchID.child("userstatus").setValue("on");
                                             getMatchID.addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -187,29 +153,27 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                         String key = phone.getKey();
                                                         if (key.equalsIgnoreCase("userstatus") || key.equalsIgnoreCase("time")) {
 
-                                                        }
-                                                        else {
+                                                        } else {
                                                             HashMap numberDetails = (HashMap) phone.getValue();
-                                                              name = (String) numberDetails.get("name");
-                                                              request = (String) numberDetails.get("request");
-                                                              Status = (String) numberDetails.get("status");
-                                                              update = (String) numberDetails.get("update");
-                                                            numbers.add( new localdata(matches.getUnique_ID()+"",Status,key,((Activity) context).getIntent().getStringExtra("Email"),request,utilityConstant.ON,update,name));
+                                                            name = (String) numberDetails.get("name");
+                                                            request = (String) numberDetails.get("request");
+                                                            Status = (String) numberDetails.get("status");
+                                                            update = (String) numberDetails.get("update");
+                                                            numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
                                                         }
 
                                                     }
-                                                    Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
+                                                    utilityConstant.showToast(context, "service check");
 
                                                     helper insert = new helper(context);
-                                                    Intent intent = ((Activity) context).getIntent();
                                                     long idCheck = insert.insertData(numbers);
-                                                    Toast.makeText(context, ""+idCheck, Toast.LENGTH_SHORT).show();
+                                                    utilityConstant.showToast(context, "" + idCheck);
                                                     if (idCheck != -1) {
-                                                        Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
+                                                        utilityConstant.showToast(context, "Service Start");
                                                         ((Activity) context).startService(new Intent(getContext(), services.class));
 
                                                     } else {
-                                                        Toast.makeText(context, "Error in Database", Toast.LENGTH_SHORT).show();
+                                                        utilityConstant.showToast(context, "Error in Database");
                                                     }
 
                                                 }
@@ -219,13 +183,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                                                 }
                                             });
-
-
-                                            // storing in sharedprefference
-
-
-                                            // end storing in shared prefference
-
                                             break;
                                             // break when email address find
 
@@ -237,15 +194,14 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                                 @Override
                                 public void onCancelled(DatabaseError error) {
-                                    // Failed to read value
                                     Log.w("Read Failed", "Failed to read value.", error.toException());
                                 }
                             });
                         } else {
-                            Toast.makeText(context, "service check", Toast.LENGTH_SHORT).show();
+                            utilityConstant.showToast(context, "service check");
+
                             String id = "matchID-" + matches.getUnique_ID();
                             DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                        //    databaseReference.child("time").setValue("2");
                             databaseReference.child("userstatus").setValue("on");
                             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -268,24 +224,22 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             request = (String) numberDetails.get("request");
                                             Status = (String) numberDetails.get("status");
                                             update = (String) numberDetails.get("update");
-                                            numbers.add( new localdata(matches.getUnique_ID()+"",Status,key,((Activity) context).getIntent().getStringExtra("Email"),request,utilityConstant.ON,update,name));
-
+                                            numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
                                         }
-
                                     }
                                     helper insert = new helper(context);
-                                    Intent intent = ((Activity) context).getIntent();
                                     long idCheck = insert.insertData(numbers);
-                                    Toast.makeText(context, ""+idCheck, Toast.LENGTH_SHORT).show();
+                                    utilityConstant.showToast(context, "" + idCheck);
 
                                     if (idCheck != -1) {
-                                       Toast.makeText(context, "Service Start", Toast.LENGTH_SHORT).show();
-                                      ((Activity) context).startService(new Intent(getContext(), services.class));
+                                        utilityConstant.showToast(context, "Service Start");
+
+                                        ((Activity) context).startService(new Intent(getContext(), services.class));
 
                                     } else {
-                                        Toast.makeText(context, "Error in Database", Toast.LENGTH_SHORT).show();
+                                        utilityConstant.showToast(context, "Error in Database");
+
                                     }
-                                    // insert.insertData("wahab","sss");
 
                                 }
 
@@ -296,8 +250,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                             });
 
                         }
-                        // yaha tak copy kia he hum ne  niche wale else se
-
                     }
 
 
@@ -308,7 +260,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                     }
                     checkOnOf = false;
                     utilityConstant.CHECKCOUNT = 0;
-                    Toast.makeText(context, "Disable", Toast.LENGTH_SHORT).show();
+                    utilityConstant.showToast(context, "Disable");
                     String Request;
                     if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
                         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -319,8 +271,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                 Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
 
                                 for (DataSnapshot child : childrenData) {
-//                    DatabaseReference databaseReference=child.getRef();
-//                    databaseReference.
                                     HashMap hashMap = (HashMap) child.getValue();
                                     final String email = (String) hashMap.get("email");
 
@@ -348,9 +298,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         insert.deleteAll();
 
 
-                                        // insert.insertData("wahab","sss");
-
-
                                         break;
                                         // break when email address find
 
@@ -362,7 +309,6 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                             @Override
                             public void onCancelled(DatabaseError error) {
-                                // Failed to read value
                                 Log.w("Read Failed", "Failed to read value.", error.toException());
                             }
                         });
@@ -387,22 +333,16 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
         if (button.getId() == setCoverage.getId()) {
             currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) v.getTag());
-            Toast.makeText(context, "Match id" + matches.getUnique_ID(), Toast.LENGTH_SHORT).show();
+            utilityConstant.showToast(context, "Match id");
 
             Intent intent = ((Activity) context).getIntent();
-            Toast.makeText(getContext(), "set Coverage", Toast.LENGTH_LONG).show();
+            utilityConstant.showToast(context, "set Coverage");
+
             Intent addPerson = new Intent(getContext(), PersonsDetail.class);
             addPerson.putExtra("Email", intent.getStringExtra("Email"));
             addPerson.putExtra("matchId", matches.getUnique_ID());
             getContext().startActivity(addPerson);
-            //((Activity)context).finish();
         }
 
     }
-
-//    @Override
-//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//        //  Toast.makeText(getContext(), "Position is "+position, Toast.LENGTH_SHORT).show();
-//        utilityConstant.spinnerItemPosition = position;
-//    }
 }

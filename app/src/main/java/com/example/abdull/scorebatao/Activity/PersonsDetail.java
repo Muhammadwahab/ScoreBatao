@@ -23,8 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.example.abdull.scorebatao.R;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -291,7 +289,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
                 Matcher m = p.matcher(phoneNumber);
                 if (!m.matches()) {
-                    showToast("Invalid PhoneNumber");
+                    utilityConstant.showToast(getApplicationContext(),"Invalid PhoneNumber");
 
                 } else {
                     String Request;
@@ -316,8 +314,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
                                         setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
-                                        // Toast.makeText(PersonsDetail.this, "Referecne is " + databaseReference.toString(), Toast.LENGTH_LONG).show();
-                                        showToast("Referecne is " + databaseReference.toString());
+                                        utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
                                         editor.commit();
@@ -349,8 +346,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-        Toast.makeText(this, "Position is " + position, Toast.LENGTH_SHORT).show();
+        utilityConstant.showToast(this, "Position is " + position);
         utilityConstant.spinnerItemPosition = position;
     }
 
@@ -361,21 +357,16 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
     private void deleteNumber(final long idDelete) {
         final AlertDialog.Builder optionBuilder = new AlertDialog.Builder(this);
-
-
         optionBuilder.setTitle("Options");
         optionBuilder.setMessage("Want to  Delete Record");
         optionBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 String Request;
                 Request = storeUserRequest.getString(utilityConstant.requestCatche, "null");
                 String idlocal = "/matchID-" + intent.getLongExtra("matchId", -2) + "/" + numbers.get((int) idDelete);
                 DatabaseReference DeleteNumber = database.getReference(Request + idlocal);
                 DeleteNumber.removeValue();
-
-
             }
         });
 
@@ -387,8 +378,6 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         });
         AlertDialog optionAlert = optionBuilder.create();
         optionAlert.show();
-
-
     }
 
     @Override
@@ -410,8 +399,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 horizontalLinearButtons.setVisibility(View.VISIBLE);
                 intervalSpinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
             }
-
-            showToast("Interval");
+            utilityConstant.showToast(this,"Interval");
         } else if (v.getId() == R.id.radio_event) {
 
             if (isChecked) {
@@ -448,11 +436,6 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             return eventSpinner;
         return intervalSpinner;
     }
-
-    void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
     ArrayAdapter getAdapter(int arrayID) {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 arrayID, android.R.layout.simple_spinner_item);

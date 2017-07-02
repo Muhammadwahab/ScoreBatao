@@ -1,5 +1,8 @@
 package utility;
 
+import android.content.Context;
+import android.widget.Toast;
+
 /**
  * Created by abdull on 5/31/17.
  */
@@ -23,6 +26,11 @@ public class utilityConstant {
     public static String UPDATE = "OFF";
     public static String INTEVAL = "INTERVAL";
     public static String EVENT = "EVENT";
+
+
+    public static void showToast(Context context, String Message) {
+        Toast.makeText(context, Message, Toast.LENGTH_SHORT).show();
+    }
 
 
 }
