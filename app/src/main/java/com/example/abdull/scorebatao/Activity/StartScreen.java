@@ -1,5 +1,6 @@
 package com.example.abdull.scorebatao.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,6 +58,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
     private com.facebook.login.widget.LoginButton loginButton;
     private CallbackManager callbackManager;
     private SharedPreferences sharedpreferences;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +133,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                 startActivity(ListOFScreen);
                                 signInMethod(utilityConstant.facebook);
                                 finish();
+                                progress.dismiss();
                                 utilityConstant.showToast(getApplicationContext(), "Sign In Successfully using Fb ");
                             } else {
 
@@ -143,6 +146,8 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                 startActivity(ListOFScreen);
                                 signInMethod(utilityConstant.facebook);
                                 finish();
+                                progress.dismiss();
+
                                 utilityConstant.showToast(getApplicationContext(), "Sign In Successfully using Fb ");
 
                             }
@@ -167,6 +172,12 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
+                        progress = new ProgressDialog(StartScreen.this);
+                        progress.setTitle("Loading Account");
+                        progress.setMessage("Facbook Signing...");
+                        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                        progress.show();
+
                         GraphRequest request = GraphRequest.newMeRequest(
                                 loginResult.getAccessToken(), graphJSONObjectCallback);
                         Log.d("request", request.toString());
@@ -207,8 +218,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                         finish();
                         signInMethod(utilityConstant.custom);
                         utilityConstant.showToast(getApplicationContext(), "Sign In Successfully");
-
-
                     }
 
                 } else {
@@ -240,6 +249,14 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                 utilityConstant.showToast(getApplicationContext(), "Empty Field");
 
             } else {
+
+                 progress = new ProgressDialog(this);
+                progress.setTitle("Loading");
+                 progress.setMessage("Signing in Please Wait...");
+               progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                 progress.show();
+
+
                 mAuth.signInWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -253,8 +270,10 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                     throw task.getException();
 
                                 } catch (FirebaseAuthInvalidUserException e) {
+                                    progress.dismiss();
                                     utilityConstant.showToast(getApplicationContext(), "" + e);
                                 } catch (FirebaseAuthInvalidCredentialsException e) {
+                                    progress.dismiss();
                                     utilityConstant.showToast(getApplicationContext(), "" + e);
                                 } catch (Exception e) {
 
@@ -320,6 +339,12 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         final Button NextProcess = (Button) dialogView.findViewById(R.id.nextProcessforget); //here
         final Button discard = (Button) dialogView.findViewById(R.id.cancle); //here
 
+
+        builder.setView(dialogView);
+        final AlertDialog dialogUpdate = builder.create();
+        dialogUpdate.show();
+
+
         discard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -330,6 +355,11 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         NextProcess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progress = new ProgressDialog(StartScreen.this);
+                progress.setTitle("Loading");
+                progress.setMessage("Forget Password Please Wait...");
+                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                progress.show();
 
                 mAuth.sendPasswordResetEmail(email.getText().toString().trim())
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -337,19 +367,24 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
                                     utilityConstant.showToast(getApplicationContext(), "Reset Email send to user " + email.getText().toString().trim());
+                                    progress.dismiss();
+                                    dialogUpdate.dismiss();
+
 
                                 } else {
                                     try {
                                         throw task.getException();
 
                                     } catch (FirebaseAuthInvalidUserException e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(), "no email in database found " + e.getErrorCode());
                                     } catch (FirebaseAuthInvalidCredentialsException e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getErrorCode());
 
                                     } catch (Exception e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(), "Invalid Email " + e.getMessage());
-
 
                                     }
 
@@ -358,9 +393,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                         });
             }
         });
-        builder.setView(dialogView);
-        AlertDialog dialogUpdate = builder.create();
-        dialogUpdate.show();
+
     }
 
     @Override

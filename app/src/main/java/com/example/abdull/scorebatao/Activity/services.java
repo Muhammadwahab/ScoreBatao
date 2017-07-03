@@ -124,7 +124,8 @@ public class services extends Service {
                 .setTicker("ScoreBatao")
                 .build();
         startForeground(1, notification);
-        return super.onStartCommand(intent, flags, startId);
+        //return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
     void gettingScore(final String MatchID, final ArrayList data) {
         // Instantiate the RequestQueue.

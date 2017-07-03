@@ -1,5 +1,6 @@
 package com.example.abdull.scorebatao.Activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
     TextView email, password, confirmpassword;
     Button createAccount;
     private FirebaseAuth mAuth;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,12 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
+        progress = new ProgressDialog(signupAccount.this);
+        progress.setTitle("Loading");
+        progress.setMessage("Creating Account Please Wait...");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+
         // checn of create account
         if (v.equals(createAccount)) {
             // checnk password match or not
@@ -61,15 +69,19 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                                     try {
                                         throw task.getException();
                                     } catch (FirebaseAuthWeakPasswordException e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(),"week");
 
                                     } catch (FirebaseAuthInvalidCredentialsException e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(),"invalid" + e);
 
                                     } catch (FirebaseAuthUserCollisionException e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(),"usercollison"+e);
 
                                     } catch (Exception e) {
+                                        progress.dismiss();
                                         utilityConstant.showToast(getApplicationContext(),"extra "+e);
 
                                     }
@@ -89,6 +101,7 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                               String emailOfFB=firebaseUser.getEmail();
                                 user userData = new user(emailOfFB,"ID-3333");
                                                 myRef.child(userId).setValue(userData);
+                                                progress.dismiss();
                                                 utilityConstant.showToast(getApplicationContext(),"email send to recipeient ");
                                             }
                                         }
@@ -98,7 +111,15 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                         });
             }
         } else {
+            progress.dismiss();
             utilityConstant.showToast(getApplicationContext(),"password did not match");
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
 }
+

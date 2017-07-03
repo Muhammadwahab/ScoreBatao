@@ -35,7 +35,9 @@
         <activity android:name=".Activity.AddPersons" />
         <activity android:name=".Activity.signupAccount"></activity>
 
-        <service android:name=".Activity.services"/>
+        <service android:name=".Activity.services"
+            android:stopWithTask="false"
+            />
     </application>
 
 </manifest>
