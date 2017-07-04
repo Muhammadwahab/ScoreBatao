@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.abdull.scorebatao.Activity.EventService;
 import com.example.abdull.scorebatao.Activity.PersonsDetail;
 import com.example.abdull.scorebatao.Activity.services;
 import com.example.abdull.scorebatao.R;
@@ -171,6 +172,9 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                     if (idCheck != -1) {
                                                         utilityConstant.showToast(context, "Service Start");
                                                         ((Activity) context).startService(new Intent(getContext(), services.class));
+                                                        // event Service
+                                                       // ((Activity) context).startService(new Intent(getContext(), EventService.class));
+
 
                                                     } else {
                                                         utilityConstant.showToast(context, "Error in Database");
