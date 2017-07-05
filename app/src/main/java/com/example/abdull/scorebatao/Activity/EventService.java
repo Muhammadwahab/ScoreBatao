@@ -228,9 +228,9 @@ public class EventService extends Service {
 
     private void addScore(JSONObject singleOver) throws JSONException {
         // get match score
-        singleOver.getString("wickets");
-        singleOver.getString("runs");
-        singleOver.getString("team_id");
+//        singleOver.getString("wickets");
+//        singleOver.getString("runs");
+//        singleOver.getString("team_id");
         if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
         {
             utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
