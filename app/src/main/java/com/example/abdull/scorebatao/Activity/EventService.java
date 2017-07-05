@@ -21,6 +21,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.abdull.scorebatao.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -151,6 +152,42 @@ public class EventService extends Service {
         try {
 
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+            JSONArray oversArray=jsonObject.getJSONArray("data");
+            for (int i = 0; i <oversArray.length() ; i++) {
+                JSONObject singleOver=oversArray.getJSONObject(i);
+                if (singleOver.getJSONArray("ball").length()>=6)
+                {
+                    // store all ball result
+                    JSONArray balls=singleOver.getJSONArray("ball");
+
+                    for (int j = 0; j <balls.length() ; j++) {
+                        JSONObject ballDetail=balls.getJSONObject(i);
+                        // get all details of over and event happend
+                        String Event= (String) ballDetail.get("event");
+                        checkEvent(Event,ballDetail);
+
+                    }
+                    // get match score
+                    singleOver.getString("wickets");
+                    singleOver.getString("runs");
+                    singleOver.getString("team_id");
+
+                    addScore(singleOver);
+
+                    break;
+                }
+                else {
+                    // store certain bowl result and continue
+                    JSONArray balls=singleOver.getJSONArray("ball");
+
+                    for (int j = 0; j <balls.length() ; j++) {
+                        JSONObject ballDetail=balls.getJSONObject(i);
+                        // get all details of event happend
+
+                    }
+                }
+
+            }
             String Team_1 = jsonObject.getString("team-1");
             String Team_2 = jsonObject.getString("team-2");
             String matchType = jsonObject.getString("type");
@@ -187,6 +224,55 @@ public class EventService extends Service {
             e.printStackTrace();
         }
         registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
+    }
+
+    private void addScore(JSONObject singleOver) throws JSONException {
+        // get match score
+        singleOver.getString("wickets");
+        singleOver.getString("runs");
+        singleOver.getString("team_id");
+        if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
+        {
+            utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+
+        }
+        else  if(!utilityConstant.EVEN_OUT_DETAIL.equals(""))
+        {
+            utilityConstant.EVEN_OUT_DETAIL= utilityConstant.EVEN_OUT_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+
+        }
+        else  if(!utilityConstant.EVEN_SIX_DETAIL.equals(""))
+        {
+            utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+
+        }
+
+    }
+
+    private void checkEvent(String event,JSONObject ballDetail) throws JSONException {
+
+        switch (event)
+        {
+            case utilityConstant.EVEN_FOUR:
+                //this
+                String delievery= (String) ballDetail.get("overs_actual");
+                String player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_FOUR;
+                utilityConstant.EVEN_FOUR_DETAIL=delievery+":"+player;
+                case utilityConstant.EVEN_OUT:
+                     delievery= (String) ballDetail.get("overs_actual");
+                     player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_OUT;
+                    utilityConstant.EVEN_OUT_DETAIL=delievery+":"+player;
+                    // this
+                    case utilityConstant.EVEN_SIX:
+                        // this
+                        delievery= (String) ballDetail.get("overs_actual");
+                        player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_SIX;
+                        utilityConstant.EVEN_SIX_DETAIL=delievery+":"+player;
+                        default:
+                            // this
+
+
+        }
     }
 
     @Override

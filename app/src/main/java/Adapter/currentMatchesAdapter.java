@@ -179,9 +179,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                     } else {
                                                         utilityConstant.showToast(context, "Error in Database");
                                                     }
-
                                                 }
-
                                                 @Override
                                                 public void onCancelled(DatabaseError databaseError) {
 
@@ -189,11 +187,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             });
                                             break;
                                             // break when email address find
-
                                         }
-
                                     }
-
                                 }
 
                                 @Override

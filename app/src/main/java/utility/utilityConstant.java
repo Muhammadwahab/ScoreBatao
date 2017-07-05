@@ -26,6 +26,17 @@ public class utilityConstant {
     public static String UPDATE = "OFF";
     public static String INTEVAL = "INTERVAL";
     public static String EVENT = "EVENT";
+    public static final String EVEN_FOUR = "FOUR";
+    public static final String EVEN_SIX = "SIX";
+    public static final String EVEN_OUT = "OUT";
+    public static String EVEN_FOUR_DETAIL = "";
+    public static String EVEN_OUT_DETAIL = "";
+    public static String EVEN_SIX_DETAIL = "";
+
+
+
+
+
 
 
     public static void showToast(Context context, String Message) {

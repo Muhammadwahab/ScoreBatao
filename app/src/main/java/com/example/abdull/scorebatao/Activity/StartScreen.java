@@ -100,7 +100,9 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
                 try {
                     // user insert
-                    final String emailOfFB = object.getString("email").toString();
+                   // final String emailOfFB = object.getString("email").toString();
+
+                    final String emailOfFB = object.getString("id").toString();
                     sharedpreferences = getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedpreferences.edit();
 
@@ -113,7 +115,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                             // whenever data at this location is updated.
                             Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
                             boolean checkFb = false;
-
                             for (DataSnapshot child : childrenData) {
 //
                                 HashMap hashMap = (HashMap) child.getValue();
@@ -123,8 +124,6 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                     break;
                                     // break when email address find
                                 }
-
-
                             }
                             if (checkFb) {
                                 // move to mathes screen
