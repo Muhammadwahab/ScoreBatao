@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -51,6 +53,7 @@ public class EventService extends Service {
     private Handler hand = new Handler();
     // timer handling
     private Timer timer;
+    boolean sameUpdateCollision;
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -76,6 +79,9 @@ public class EventService extends Service {
             utilityConstant.showToast(getApplicationContext(),message);
         }
     };
+    private boolean checkException;
+    SharedPreferences storeUserRequest;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -88,6 +94,7 @@ public class EventService extends Service {
         pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
         wl.acquire();
+        storeUserRequest = this.getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         utilityConstant.showToast(this,"On Create Wake Initialze");
         helper = new helper(getApplicationContext());
         timerCount = helper.getAllEvent();
@@ -153,6 +160,22 @@ public class EventService extends Service {
         });
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
     }
     public void getScore(String response, ArrayList data) {
         JSONTokener jsonTokener = new JSONTokener(response);
@@ -169,17 +192,62 @@ public class EventService extends Service {
 
                     for (int j = 0; j < balls.length(); j++) {
                         JSONObject ballDetail = balls.getJSONObject(j);
+                        if (j == 0) {
+
+                                  String ActualOver=storeUserRequest.getString("lastRetireveOver","null");
+                            if (ActualOver.equalsIgnoreCase(ballDetail.getString("overs_actual"))) {
+                                sameUpdateCollision=true;
+                                break;
+
+                            }
+                            SharedPreferences.Editor editor = storeUserRequest.edit();
+                            editor.putString("lastRetireveOver",ballDetail.getString("overs_actual") );
+                            editor.commit();
+
+                        }
+
                         // get all details of over and event happend
                         String Event = (String) ballDetail.get("event");
                         checkEvent(Event, ballDetail);
 
                     }
+                    if (sameUpdateCollision)
+                    {
+                        sameUpdateCollision=false;
+                        break;
+                    }
                     // get match score
-                    singleOver.getString("wickets");
-                    singleOver.getString("runs");
-                    singleOver.getString("team_id");
 
                     addScore(singleOver);
+                    for (int j = 0; j < data.size(); j++) {
+
+                        localdata localdata= (pojo.localdata) data.get(j);
+                        if (localdata.getRequest().equalsIgnoreCase(utilityConstant.EVEN_FOUR) && !utilityConstant.EVEN_FOUR_DETAIL.equalsIgnoreCase("")) {
+                            sendMessage(localdata.getPhonenumber(),utilityConstant.EVEN_FOUR_DETAIL);
+                            Toast.makeText(this, ""+utilityConstant.EVEN_FOUR_DETAIL, Toast.LENGTH_LONG).show();
+
+
+                        }
+                        else if (localdata.getRequest().equalsIgnoreCase(utilityConstant.EVEN_SIX) && !utilityConstant.EVEN_SIX_DETAIL.equalsIgnoreCase("")) {
+                            sendMessage(localdata.getPhonenumber(),utilityConstant.EVEN_SIX_DETAIL);
+                            Toast.makeText(this, ""+utilityConstant.EVEN_SIX_DETAIL, Toast.LENGTH_LONG).show();
+
+
+                        }
+                        else if (localdata.getRequest().equalsIgnoreCase(utilityConstant.EVEN_OUT) && !utilityConstant.EVEN_OUT_DETAIL.equalsIgnoreCase("")) {
+                            sendMessage(localdata.getPhonenumber(),utilityConstant.EVEN_OUT_DETAIL);
+                            Toast.makeText(this, ""+utilityConstant.EVEN_OUT_DETAIL, Toast.LENGTH_LONG).show();
+
+
+                        }
+                        else if (localdata.getRequest().equalsIgnoreCase(utilityConstant.EVEN_NO_RUN) && !utilityConstant.EVEN_NO_RUN_DETAIL.equalsIgnoreCase("")) {
+                            sendMessage(localdata.getPhonenumber(),utilityConstant.EVEN_NO_RUN_DETAIL);
+                            Toast.makeText(this, ""+utilityConstant.EVEN_NO_RUN_DETAIL, Toast.LENGTH_LONG).show();
+
+
+                        }
+
+                    }
                     utilityConstant.EVEN_NO_RUN_DETAIL="";
                     utilityConstant.EVEN_FOUR_DETAIL="";
                     utilityConstant.EVEN_SIX_DETAIL="";
@@ -193,16 +261,45 @@ public class EventService extends Service {
                     for (int j = 0; j < balls.length(); j++) {
                         JSONObject ballDetail = balls.getJSONObject(j);
                         // get all details of event happend
+                        if (checkException) {
+                            checkException=false;
+                            break;
+                        }
+                        if (j==0)
+                        {
+                            String ActualOver=storeUserRequest.getString("lastRetireveOver","null");
+                            if (ActualOver.equalsIgnoreCase(ballDetail.getString("overs_actual"))) {
+                                sameUpdateCollision=true;
+                                break;
+
+                            }
+
+                            SharedPreferences.Editor editor = storeUserRequest.edit();
+                            editor.putString("lastRetireveOver",ballDetail.getString("overs_actual") );
+                            editor.commit();
+                        }
+
+
                         String Event = (String) ballDetail.get("event");
                         checkEvent(Event, ballDetail);
 
+
                     }
+                }
+                if (sameUpdateCollision ) {
+                    {
+                        //break;
+                        sameUpdateCollision=false;
+                        break;
+                    }
+
                 }
 
             }
         }catch (Exception e)
         {
-
+            Toast.makeText(this, ""+e, Toast.LENGTH_SHORT).show();
+            checkException=true;
         }
 
 //            String Team_1 = jsonObject.getString("team-1");
@@ -251,27 +348,22 @@ public class EventService extends Service {
         if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
         {
             utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
-            utilityConstant.showToast(this, utilityConstant.EVEN_FOUR_DETAIL);
 
         }
-        else  if(!utilityConstant.EVEN_OUT_DETAIL.equals(""))
+          if(!utilityConstant.EVEN_OUT_DETAIL.equals(""))
         {
             utilityConstant.EVEN_OUT_DETAIL= utilityConstant.EVEN_OUT_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
-            utilityConstant.showToast(this, utilityConstant.EVEN_OUT_DETAIL);
 
         }
-        else  if(!utilityConstant.EVEN_SIX_DETAIL.equals(""))
+          if(!utilityConstant.EVEN_SIX_DETAIL.equals(""))
         {
             utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
-            utilityConstant.showToast(this, utilityConstant.EVEN_SIX_DETAIL);
-
 
         }
-        else  if(!utilityConstant.EVEN_NO_RUN_DETAIL.equals(""))
+          if(!utilityConstant.EVEN_NO_RUN_DETAIL.equals(""))
         {
             utilityConstant.EVEN_NO_RUN_DETAIL= utilityConstant.EVEN_NO_RUN_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
           //  utilityConstant.showToast(this, utilityConstant.EVEN_NO_RUN_DETAIL);
-            Toast.makeText(this, ""+utilityConstant.EVEN_NO_RUN_DETAIL, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -341,6 +433,7 @@ public class EventService extends Service {
                     {
                         localdata localdata = (localdata) Data.get(0);
                         gettingScore(localdata.getMatchID(), Data);
+                     //   gettingScore("1098210",Data);
                     }
                     else
                     {
@@ -353,5 +446,25 @@ public class EventService extends Service {
             });
 
         }
+    }
+
+    void sendMessage(String number,String Score)
+    {
+        SmsManager smsManager = SmsManager.getDefault();
+                ArrayList<String> parts = smsManager.divideMessage(Score);
+                try {
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0);
+                    ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
+                    ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
+                    for (int j = 0; j < parts.size(); j++) {
+                        sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
+                    }
+                    smsManager.sendMultipartTextMessage(number, null, parts, sentIntents, null);
+
+                } catch (Exception e) {
+                }
+
+        registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
+
     }
 }
