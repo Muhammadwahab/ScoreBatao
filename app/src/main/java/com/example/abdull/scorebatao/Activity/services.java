@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.SmsManager;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -95,6 +96,7 @@ public class services extends Service {
         {
             stopSelf();
             stopForeground(true);
+            Toast.makeText(this, "No User Found In Interval List", Toast.LENGTH_SHORT).show();
         }
         for (int i = 0; i < timerArray.length; i++) {
             localdata local = (localdata) timerCount.get(i);

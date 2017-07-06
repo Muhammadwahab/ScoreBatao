@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.telephony.SmsManager;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -89,12 +90,8 @@ public class EventService extends Service {
         wl.acquire();
         utilityConstant.showToast(this,"On Create Wake Initialze");
         helper = new helper(getApplicationContext());
-        timerCount = helper.getTimerCounts();
-        if(timerCount.size()==0)
-        {
-            stopSelf();
-            stopForeground(true);
-        }
+        timerCount = helper.getAllEvent();
+
             if (timer != null) {
                 timer.cancel();
 
@@ -102,8 +99,19 @@ public class EventService extends Service {
 
                 timer = new Timer();
             }
+        if(timerCount.size()==0)
+        {
+            timer.cancel();
+            stopSelf();
+            stopForeground(true);
+            Toast.makeText(this, "No User Found in Event List", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            timer.scheduleAtFixedRate(new task(timerCount), 0, 2 * 60 * 1000);
+        }
 
-            timer.scheduleAtFixedRate(new task(helper.getAllEvent()), 0, 2 * 60 * 1000);
+
 
 
     }
@@ -152,19 +160,18 @@ public class EventService extends Service {
         try {
 
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            JSONArray oversArray=jsonObject.getJSONArray("data");
-            for (int i = 0; i <oversArray.length() ; i++) {
-                JSONObject singleOver=oversArray.getJSONObject(i);
-                if (singleOver.getJSONArray("ball").length()>=6)
-                {
+            JSONArray oversArray = jsonObject.getJSONArray("data");
+            for (int i = 0; i < oversArray.length(); i++) {
+                JSONObject singleOver = oversArray.getJSONObject(i);
+                if (singleOver.getJSONArray("ball").length() >= 6) {
                     // store all ball result
-                    JSONArray balls=singleOver.getJSONArray("ball");
+                    JSONArray balls = singleOver.getJSONArray("ball");
 
-                    for (int j = 0; j <balls.length() ; j++) {
-                        JSONObject ballDetail=balls.getJSONObject(i);
+                    for (int j = 0; j < balls.length(); j++) {
+                        JSONObject ballDetail = balls.getJSONObject(j);
                         // get all details of over and event happend
-                        String Event= (String) ballDetail.get("event");
-                        checkEvent(Event,ballDetail);
+                        String Event = (String) ballDetail.get("event");
+                        checkEvent(Event, ballDetail);
 
                     }
                     // get match score
@@ -173,57 +180,67 @@ public class EventService extends Service {
                     singleOver.getString("team_id");
 
                     addScore(singleOver);
+                    utilityConstant.EVEN_NO_RUN_DETAIL="";
+                    utilityConstant.EVEN_FOUR_DETAIL="";
+                    utilityConstant.EVEN_SIX_DETAIL="";
+                    utilityConstant.EVEN_OUT_DETAIL="";
 
                     break;
-                }
-                else {
+                } else {
                     // store certain bowl result and continue
-                    JSONArray balls=singleOver.getJSONArray("ball");
+                    JSONArray balls = singleOver.getJSONArray("ball");
 
-                    for (int j = 0; j <balls.length() ; j++) {
-                        JSONObject ballDetail=balls.getJSONObject(i);
+                    for (int j = 0; j < balls.length(); j++) {
+                        JSONObject ballDetail = balls.getJSONObject(j);
                         // get all details of event happend
+                        String Event = (String) ballDetail.get("event");
+                        checkEvent(Event, ballDetail);
 
                     }
                 }
 
             }
-            String Team_1 = jsonObject.getString("team-1");
-            String Team_2 = jsonObject.getString("team-2");
-            String matchType = jsonObject.getString("type");
-            boolean matchStarted = jsonObject.getBoolean("matchStarted");
-            if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
-                matchType = "ODI ";
-            }
-            if (matchStarted) {
-                Score = jsonObject.getString("score");
-            } else {
-                Score = "Match Not Start ";
-            }
-            String innings_requirement = jsonObject.getString("innings-requirement");
-            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + "Score " + Score + "" + innings_requirement;
-            utilityConstant.showToast(this,"Total" + CombineScore);
-            for (int i = 0; i < data.size(); i++) {
-                localdata localdata = (pojo.localdata) data.get(i);
-                SmsManager smsManager = SmsManager.getDefault();
-                ArrayList<String> parts = smsManager.divideMessage(CombineScore);
-                try {
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0);
-                    ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
-                    ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
-                    for (int j = 0; j < parts.size(); j++) {
-                        sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
+        }catch (Exception e)
+        {
 
-                    }
-                    smsManager.sendMultipartTextMessage(localdata.getPhonenumber(), null, parts, sentIntents, null);
-
-                } catch (Exception e) {
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
+
+//            String Team_1 = jsonObject.getString("team-1");
+//            String Team_2 = jsonObject.getString("team-2");
+//            String matchType = jsonObject.getString("type");
+//            boolean matchStarted = jsonObject.getBoolean("matchStarted");
+//            if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
+//                matchType = "ODI ";
+//            }
+//            if (matchStarted) {
+//                Score = jsonObject.getString("score");
+//            } else {
+//                Score = "Match Not Start ";
+//            }
+//            String innings_requirement = jsonObject.getString("innings-requirement");
+//            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + "Score " + Score + "" + innings_requirement;
+//            utilityConstant.showToast(this,"Total" + CombineScore);
+//            for (int i = 0; i < data.size(); i++) {
+//                localdata localdata = (pojo.localdata) data.get(i);
+//                SmsManager smsManager = SmsManager.getDefault();
+//                ArrayList<String> parts = smsManager.divideMessage(CombineScore);
+//                try {
+//                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0);
+//                    ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
+//                    ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
+//                    for (int j = 0; j < parts.size(); j++) {
+//                        sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
+//
+//                    }
+//                    smsManager.sendMultipartTextMessage(localdata.getPhonenumber(), null, parts, sentIntents, null);
+//
+//                } catch (Exception e) {
+//                }
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
     }
 
     private void addScore(JSONObject singleOver) throws JSONException {
@@ -234,17 +251,27 @@ public class EventService extends Service {
         if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
         {
             utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.showToast(this, utilityConstant.EVEN_FOUR_DETAIL);
 
         }
         else  if(!utilityConstant.EVEN_OUT_DETAIL.equals(""))
         {
             utilityConstant.EVEN_OUT_DETAIL= utilityConstant.EVEN_OUT_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.showToast(this, utilityConstant.EVEN_OUT_DETAIL);
 
         }
         else  if(!utilityConstant.EVEN_SIX_DETAIL.equals(""))
         {
             utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.showToast(this, utilityConstant.EVEN_SIX_DETAIL);
 
+
+        }
+        else  if(!utilityConstant.EVEN_NO_RUN_DETAIL.equals(""))
+        {
+            utilityConstant.EVEN_NO_RUN_DETAIL= utilityConstant.EVEN_NO_RUN_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+          //  utilityConstant.showToast(this, utilityConstant.EVEN_NO_RUN_DETAIL);
+            Toast.makeText(this, ""+utilityConstant.EVEN_NO_RUN_DETAIL, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -257,17 +284,26 @@ public class EventService extends Service {
                 //this
                 String delievery= (String) ballDetail.get("overs_actual");
                 String player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_FOUR;
-                utilityConstant.EVEN_FOUR_DETAIL=delievery+":"+player;
+                utilityConstant.EVEN_FOUR_DETAIL=utilityConstant.EVEN_FOUR_DETAIL+delievery+":"+player+"\n";
+                break;
                 case utilityConstant.EVEN_OUT:
                      delievery= (String) ballDetail.get("overs_actual");
                      player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_OUT;
-                    utilityConstant.EVEN_OUT_DETAIL=delievery+":"+player;
+                    utilityConstant.EVEN_OUT_DETAIL=  utilityConstant.EVEN_OUT_DETAIL+delievery+":"+player+"\n";
+                    break;
                     // this
                     case utilityConstant.EVEN_SIX:
                         // this
                         delievery= (String) ballDetail.get("overs_actual");
                         player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_SIX;
-                        utilityConstant.EVEN_SIX_DETAIL=delievery+":"+player;
+                        utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+delievery+":"+player+"\n";
+                        break;
+            case utilityConstant.EVEN_NO_RUN:
+                // this
+                delievery= (String) ballDetail.get("overs_actual");
+                player= (String) ballDetail.get("players") +" "+utilityConstant.EVEN_NO_RUN;
+                utilityConstant.EVEN_NO_RUN_DETAIL=utilityConstant.EVEN_NO_RUN_DETAIL+delievery+":"+player+"\n";
+                break;
                         default:
                             // this
 
@@ -282,6 +318,9 @@ public class EventService extends Service {
 //            utilityConstant.showToast(this,"Service Destroy timer number " + i);
 //        }
         wl.release();
+        if (timer != null) {
+            timer.cancel();
+        }
         stopForeground(true);
     }
     class task extends TimerTask {
@@ -305,6 +344,7 @@ public class EventService extends Service {
                     }
                     else
                     {
+                        timer.cancel();
                         stopSelf();
                         utilityConstant.showToast(getApplication(),"NO User at the moment in Events List");
                     }

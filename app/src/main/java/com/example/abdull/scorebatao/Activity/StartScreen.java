@@ -85,6 +85,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
         callbackManager = CallbackManager.Factory.create();
 
         // Callback registration

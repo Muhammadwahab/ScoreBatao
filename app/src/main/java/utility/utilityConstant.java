@@ -29,9 +29,11 @@ public class utilityConstant {
     public static final String EVEN_FOUR = "FOUR";
     public static final String EVEN_SIX = "SIX";
     public static final String EVEN_OUT = "OUT";
+    public static final String EVEN_NO_RUN = "no run";
     public static String EVEN_FOUR_DETAIL = "";
     public static String EVEN_OUT_DETAIL = "";
     public static String EVEN_SIX_DETAIL = "";
+    public static String EVEN_NO_RUN_DETAIL = "";
 
 
 

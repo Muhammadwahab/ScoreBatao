@@ -14,9 +14,10 @@
     </string-array>
 
     <string-array name="EventOfMatch">
-        <item>4 runs</item>
-        <item>6 runs</item>
-        <item>wicket</item>
+        <item>FOUR</item>
+        <item>SIX</item>
+        <item>OUT</item>
+        <item>no run</item>
 
     </string-array>
 

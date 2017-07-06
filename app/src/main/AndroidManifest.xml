@@ -38,6 +38,10 @@
         <service android:name=".Activity.services"
             android:stopWithTask="false"
             />
+        <service android:name=".Activity.EventService"
+            android:stopWithTask="false"
+            />
+
     </application>
 
 </manifest>

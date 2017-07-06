@@ -91,7 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="#60000000"
+            android:background="@color/colorPrimaryDark"
             android:text="LOGIN"
             android:textColor="@color/defult" />
 
@@ -110,8 +110,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="cursive"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp"
             android:text="or"
             android:textAlignment="center"
             android:textColor="@color/defult"
@@ -121,35 +119,38 @@
             android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#0071bc"
-            android:drawablePadding="40dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:textAlignment="viewStart"
-            android:textStyle="bold" />
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerInside"
+
+            android:textStyle="bold"
+            tools:login_text="Facebook Login"
+            tools:logout_text="Facebook Logout" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="45dp"
             android:text="Don't have an account yes?"
+            android:visibility="gone"
             android:textAlignment="center"
             android:textColor="@color/defult" />
 
         <Button
             android:id="@+id/createaccount"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#50000000"
+            android:background="@color/signup"
+            android:elevation="0dp"
             android:text="Sign Up"
-            android:textAlignment="textStart"
+            android:textAlignment="center"
             android:textColor="@color/defult"
             android:textStyle="bold" />
     </LinearLayout>

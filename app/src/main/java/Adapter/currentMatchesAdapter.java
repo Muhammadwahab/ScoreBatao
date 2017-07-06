@@ -173,7 +173,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                         utilityConstant.showToast(context, "Service Start");
                                                         ((Activity) context).startService(new Intent(getContext(), services.class));
                                                         // event Service
-                                                       // ((Activity) context).startService(new Intent(getContext(), EventService.class));
+                                                        ((Activity) context).startService(new Intent(getContext(), EventService.class));
 
 
                                                     } else {
@@ -234,6 +234,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         utilityConstant.showToast(context, "Service Start");
 
                                         ((Activity) context).startService(new Intent(getContext(), services.class));
+                                        ((Activity) context).startService(new Intent(getContext(), EventService.class));
+
 
                                     } else {
                                         utilityConstant.showToast(context, "Error in Database");
@@ -294,6 +296,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         getMatchID.child("userstatus").setValue("OFF");
                                         helper insert = new helper(context);
                                         ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
+                                        ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
+
                                         insert.deleteAll();
 
 
@@ -317,6 +321,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                         databaseReference.child("userstatus").setValue("OFF");
                         helper insert = new helper(context);
                         ((Activity) context).stopService(new Intent(getContext(), services.class));
+                        ((Activity) context).stopService(new Intent(getContext(), EventService.class));
+
                         insert.deleteAll();
                     }
 
