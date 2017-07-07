@@ -194,14 +194,14 @@ public class EventService extends Service {
                         JSONObject ballDetail = balls.getJSONObject(j);
                         if (j == 0) {
 
-                                  String ActualOver=storeUserRequest.getString("lastRetireveOver","null");
+                                  String ActualOver=storeUserRequest.getString(utilityConstant.lastRetireveOver,"null");
                             if (ActualOver.equalsIgnoreCase(ballDetail.getString("overs_actual"))) {
                                 sameUpdateCollision=true;
                                 break;
 
                             }
                             SharedPreferences.Editor editor = storeUserRequest.edit();
-                            editor.putString("lastRetireveOver",ballDetail.getString("overs_actual") );
+                            editor.putString(utilityConstant.lastRetireveOver,ballDetail.getString("overs_actual") );
                             editor.commit();
 
                         }
@@ -267,7 +267,7 @@ public class EventService extends Service {
                         }
                         if (j==0)
                         {
-                            String ActualOver=storeUserRequest.getString("lastRetireveOver","null");
+                            String ActualOver=storeUserRequest.getString(utilityConstant.lastRetireveOver,"null");
                             if (ActualOver.equalsIgnoreCase(ballDetail.getString("overs_actual"))) {
                                 sameUpdateCollision=true;
                                 break;
@@ -275,7 +275,7 @@ public class EventService extends Service {
                             }
 
                             SharedPreferences.Editor editor = storeUserRequest.edit();
-                            editor.putString("lastRetireveOver",ballDetail.getString("overs_actual") );
+                            editor.putString(utilityConstant.lastRetireveOver,ballDetail.getString("overs_actual") );
                             editor.commit();
                         }
 

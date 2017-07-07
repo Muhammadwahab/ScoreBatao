@@ -34,6 +34,7 @@ public class utilityConstant {
     public static String EVEN_OUT_DETAIL = "";
     public static String EVEN_SIX_DETAIL = "";
     public static String EVEN_NO_RUN_DETAIL = "";
+    public static String lastRetireveOver = "lastRetireveOver";
 
 
 

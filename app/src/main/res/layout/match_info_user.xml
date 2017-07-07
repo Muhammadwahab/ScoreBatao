@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/statusID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/updateHead"
+            android:layout_below="@+id/updateHead"
+            android:text="status" />
+
+        <TextView
+            android:id="@+id/updateHead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="22dp"
+            android:layout_toStartOf="@+id/updateID"
+            android:text="update" />
+
+        <TextView
+            android:id="@+id/updateID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="17dp"
+            android:text="INTERVAL" />
+
+        <TextView
+            android:id="@+id/statusID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/phoneID"
+            android:layout_alignBottom="@+id/phoneID"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="36dp"
+            android:text="ON" />
+
+        <TextView
+            android:id="@+id/phoneID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameID"
+            android:text="03471218967"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/nameID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Wahab"
+            android:textAppearance="@style/MessengerButtonText.White.Large"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/requestID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="FOUR" />
+
+</LinearLayout>
