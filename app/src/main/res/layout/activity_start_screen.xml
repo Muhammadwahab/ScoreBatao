@@ -38,8 +38,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/login"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="com.example.abdull.scorebatao.Activity.StartScreen">
+    tools:context="com.example.abdull.scorebatao.Activity.StartScreen"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,7 +49,6 @@
         android:orientation="vertical"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingTop="20dp"
 
         >
 
@@ -91,25 +90,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="#d126d203"
             android:text="LOGIN"
             android:textColor="@color/defult" />
 
         <Button
             android:id="@+id/forget"
-            style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/loginID"
-            android:layout_marginLeft="10dp"
-            android:elevation="0dp"
-            android:paddingLeft="20dp"
+            android:layout_marginTop="10dp"
+
+            android:background="@color/signup"
             android:text="Forget Password" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="cursive"
+            android:fontFamily="monospace"
             android:text="or"
             android:textAlignment="center"
             android:textColor="@color/defult"
@@ -119,7 +116,6 @@
             android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerInside"
 

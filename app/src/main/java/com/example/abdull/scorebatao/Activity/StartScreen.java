@@ -348,6 +348,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         discard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialogUpdate.dismiss();
 
             }
         });
@@ -361,36 +362,47 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                 progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
                 progress.show();
 
-                mAuth.sendPasswordResetEmail(email.getText().toString().trim())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    utilityConstant.showToast(getApplicationContext(), "Reset Email send to user " + email.getText().toString().trim());
-                                    progress.dismiss();
-                                    dialogUpdate.dismiss();
-
-
-                                } else {
-                                    try {
-                                        throw task.getException();
-
-                                    } catch (FirebaseAuthInvalidUserException e) {
+                if (!email.getText().toString().trim().equalsIgnoreCase(""))
+                {
+                    mAuth.sendPasswordResetEmail(email.getText().toString().trim())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        utilityConstant.showToast(getApplicationContext(), "Reset Email send to user " + email.getText().toString().trim());
                                         progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(), "no email in database found " + e.getErrorCode());
-                                    } catch (FirebaseAuthInvalidCredentialsException e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getErrorCode());
+                                        dialogUpdate.dismiss();
 
-                                    } catch (Exception e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(), "Invalid Email " + e.getMessage());
+
+                                    } else {
+                                        try {
+                                            throw task.getException();
+
+                                        } catch (FirebaseAuthInvalidUserException e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "no email in database found " + e.getErrorCode());
+                                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getErrorCode());
+
+                                        } catch (Exception e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "Invalid Email " + e.getMessage());
+
+                                        }
 
                                     }
-
                                 }
-                            }
-                        });
+                            });
+
+                }
+                else
+                {
+                    progress.dismiss();
+                    utilityConstant.showToast(getApplicationContext(),"PLease Enter Forget Email");
+                }
+
+
             }
         });
 

@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:background="#80000000"
+    android:background="#ed28bfa1"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
         android:textStyle="bold"
         android:paddingTop="15dp"
-        android:textColor="#e1e0de"
+        android:textColor="#580908"
         android:textSize="25sp"
         android:textAlignment="center"
         android:id="@+id/tag"
@@ -20,7 +20,8 @@
         android:layout_centerHorizontal="true" />
 
     <EditText
-        android:fontFamily="cursive"
+        android:fontFamily="monospace"
+        android:textStyle="bold"
         android:backgroundTint="#e1e0de"
         android:id="@+id/ForgetPassword_Email"
         android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
         android:allowUndo="true"
         android:ems="10"
         android:textColorHint="#e1e0de"
-        android:textColor="#e1e0de"
+        android:textColor="#3d3569"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
         android:maxLines="1"

@@ -55,64 +55,82 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
 
         // checn of create account
         if (v.equals(createAccount)) {
-            // checnk password match or not
-            if (password.getText().toString().trim().equals(confirmpassword.getText().toString().trim())) {
-                // create new account
-                mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
 
-
-                                //  throw certain Exceptions
-                                if (!task.isSuccessful()) {
-                                    try {
-                                        throw task.getException();
-                                    } catch (FirebaseAuthWeakPasswordException e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(),"week");
-
-                                    } catch (FirebaseAuthInvalidCredentialsException e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(),"invalid" + e);
-
-                                    } catch (FirebaseAuthUserCollisionException e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(),"usercollison"+e);
-
-                                    } catch (Exception e) {
-                                        progress.dismiss();
-                                        utilityConstant.showToast(getApplicationContext(),"extra "+e);
-
-                                    }
-                                } else {       // get current user
-                                    final FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                                    // send email to user
-                                    firebaseUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                final DatabaseReference myRef = database.getReference("users");
-
-                                                String userId = myRef.push().getKey();
-
-                                                // user insert
-                              String emailOfFB=firebaseUser.getEmail();
-                                user userData = new user(emailOfFB,"ID-3333");
-                                                myRef.child(userId).setValue(userData);
-                                                progress.dismiss();
-                                                utilityConstant.showToast(getApplicationContext(),"email send to recipeient ");
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        });
+            if (email.getText().toString().trim().equalsIgnoreCase(""))
+            {
+                utilityConstant.showToast(getApplicationContext(),"Enter Email To Proceed");
+                progress.dismiss();
             }
-        } else {
-            progress.dismiss();
-            utilityConstant.showToast(getApplicationContext(),"password did not match");
+            else if(password.getText().toString().trim().equalsIgnoreCase("") || confirmpassword.getText().toString().trim().equalsIgnoreCase(""))
+            {
+                utilityConstant.showToast(getApplicationContext(),"Please Fill Passwords Field");
+                progress.dismiss();
+
+            }
+            else
+            {
+                // checnk password match or not
+                if (password.getText().toString().trim().equals(confirmpassword.getText().toString().trim())) {
+                    // create new account
+                    mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
+                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+
+
+                                    //  throw certain Exceptions
+                                    if (!task.isSuccessful()) {
+                                        try {
+                                            throw task.getException();
+                                        } catch (FirebaseAuthWeakPasswordException e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "week");
+
+                                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "invalid" + e);
+
+                                        } catch (FirebaseAuthUserCollisionException e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "usercollison" + e);
+
+                                        } catch (Exception e) {
+                                            progress.dismiss();
+                                            utilityConstant.showToast(getApplicationContext(), "extra " + e);
+
+                                        }
+                                    } else {       // get current user
+                                        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                                        // send email to user
+                                        firebaseUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                    final DatabaseReference myRef = database.getReference("users");
+
+                                                    String userId = myRef.push().getKey();
+
+                                                    // user insert
+                                                    String emailOfFB = firebaseUser.getEmail();
+                                                    user userData = new user(emailOfFB, "ID-3333");
+                                                    myRef.child(userId).setValue(userData);
+                                                    progress.dismiss();
+                                                    utilityConstant.showToast(getApplicationContext(), "email send to recipeient ");
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                } else {
+                    progress.dismiss();
+                    utilityConstant.showToast(getApplicationContext(), "password did not match");
+                }
+
+            }
+
+
         }
     }
 

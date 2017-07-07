@@ -21,9 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sign up"
-            android:fontFamily="cursive"
+            android:fontFamily="monospace"
             android:textColor="@color/defult"
-            android:textStyle=""
+            android:textStyle="bold"
             android:textSize="30dp"
             android:textAlignment="center"
             />
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:background="#60000000"
+            android:background="#d126d203"
             android:text="SIGN UP"
             android:textColor="@color/defult"
 
@@ -91,6 +91,7 @@
             android:paddingTop="5dp"
             android:textColor="@color/defult"
             android:textAlignment="center"
+            android:visibility="gone"
             android:backgroundTint="@color/defult"
             android:text="By signing up,I agree to the Terms of Use"
             android:layout_width="match_parent"
