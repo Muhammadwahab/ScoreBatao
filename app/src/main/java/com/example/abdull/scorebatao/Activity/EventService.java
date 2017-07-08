@@ -214,6 +214,11 @@ public class EventService extends Service {
                     if (sameUpdateCollision)
                     {
                         sameUpdateCollision=false;
+                        utilityConstant.EVEN_NO_RUN_DETAIL="";
+                        utilityConstant.EVEN_FOUR_DETAIL="";
+                        utilityConstant.EVEN_SIX_DETAIL="";
+                        utilityConstant.EVEN_OUT_DETAIL="";
+
                         break;
                     }
                     // get match score

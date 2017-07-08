@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -50,6 +52,8 @@ public class currentMatch extends Fragment {
         utilityConstant.showToast(getContext(),"Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"));
         view = LayoutInflater.from(getContext()).inflate(R.layout.current_match, container, false);
         listView = (ListView) view.findViewById(R.id.curretListView);
+        View emptyView = view.findViewById(R.id.empty_view);
+        listView.setEmptyView(emptyView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -78,12 +82,53 @@ public class currentMatch extends Fragment {
                     public void onResponse(String response) {
                         currentMatchesAdapter.clear();
                         arrayList = getData(response);
+                        if (arrayList.size()==0) {
+                            View emptyView = view.findViewById(R.id.empty_view);
+                            TextView emptyLoading= (TextView) view.findViewById(R.id.empty_loading);
+                            TextView emptyTitle= (TextView) view.findViewById(R.id.empty_title_text);
+                            TextView emptysubTitle= (TextView) view.findViewById(R.id.empty_subtitle_text);
+                            ImageView imageView= (ImageView) view.findViewById(R.id.empty_shelter_image);
+                            ProgressBar progress= (ProgressBar) view.findViewById(R.id.progressBar);
+                            progress.setVisibility(View.GONE);
+                            emptyTitle.setVisibility(View.VISIBLE);
+                            emptysubTitle.setVisibility(View.VISIBLE);
+                            emptyLoading.setVisibility(View.GONE);
+                            imageView.setVisibility(View.VISIBLE);
+                            emptyLoading.setVisibility(View.GONE);
+                            listView.setEmptyView(emptyView);
+                        }
                         currentMatchesAdapter.addAll(arrayList);
                         currentMatchesAdapter.notifyDataSetChanged();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                final View emptyView = view.findViewById(R.id.empty_view);
+                TextView emptyLoading= (TextView) view.findViewById(R.id.empty_loading);
+                TextView emptyTitle= (TextView) view.findViewById(R.id.empty_title_text);
+                TextView emptysubTitle= (TextView) view.findViewById(R.id.empty_subtitle_text);
+                ImageView imageView= (ImageView) view.findViewById(R.id.empty_shelter_image);
+                final ProgressBar progress= (ProgressBar)view.findViewById(R.id.progressBar);
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        progress.setVisibility(View.GONE);
+                        listView.setEmptyView(emptyView);
+                        gettingMatches();
+
+                    }
+                });
+
+                progress.setVisibility(View.GONE);
+                emptyTitle.setVisibility(View.VISIBLE);
+                emptyTitle.setText("NO Network Found");
+                emptysubTitle.setText("Check Internet Connection Please tab Image To Retry");
+                emptysubTitle.setVisibility(View.VISIBLE);
+                emptyLoading.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+                emptyLoading.setVisibility(View.GONE);
+                listView.setEmptyView(emptyView);
                 utilityConstant.showToast(getContext(),"Error");
 
             }

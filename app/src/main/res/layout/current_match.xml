@@ -1,10 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-    <ListView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:id="@+id/curretListView"
-        />
+    <!--<ListView-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:id="@+id/curretListView"-->
+        <!--/>-->
+
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+    android:background="#d96f6f"
+android:layout_height="match_parent">
+
+<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/curretListView"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.example.android.pets.CatalogActivity"/>
+<!-- Empty view for the list -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/empty_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:indeterminate="true"
+        android:indeterminateTint="@android:color/holo_red_dark"
+        android:indeterminateTintMode="src_over" />
+
+    <ImageView
+        android:id="@+id/empty_shelter_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:src="@drawable/logo"/>
+
+    <TextView
+        android:id="@+id/empty_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/empty_shelter_image"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:fontFamily="sans-serif-medium"
+        android:foregroundTint="@drawable/com_facebook_button_background"
+        android:paddingTop="16dp"
+        android:text="@string/loading"
+        android:textAppearance="?android:textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/empty_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/empty_shelter_image"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-medium"
+        android:visibility="gone"
+        android:paddingTop="16dp"
+        android:text="@string/empty_view_title_text"
+        android:textAppearance="?android:textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/empty_subtitle_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/empty_title_text"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif"
+        android:gravity="center_horizontal"
+        android:paddingTop="8dp"
+        android:text="empty_view_subtitle_text"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:textColor="#A2AAB0"
+        android:visibility="gone" />
+</RelativeLayout>
+</RelativeLayout>
+
 

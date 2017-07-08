@@ -1,5 +1,6 @@
 package com.example.abdull.scorebatao.Activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,7 +38,9 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Adapter.personalDetailAdapter;
 import pojo.Detail;
+import pojo.localdata;
 import utility.utilityConstant;
 
 public class PersonsDetail extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
@@ -46,10 +49,16 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     Intent intent;
     SharedPreferences storeUserRequest;
     ArrayList numbers;
-    ArrayAdapter<String> arrayAdapter;
+    personalDetailAdapter arrayAdapter;
     LinearLayout linearLayout, horizontalLinearButtons;
     Spinner intervalSpinner, eventSpinner;
     private SharedPreferences sharedpreferences;
+
+    String name;
+    String request;
+    String Status;
+    String update;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +72,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
 
         ListView listView = (ListView) findViewById(R.id.addPerson);
-        arrayAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, numbers);
+//        View emptyView = findViewById(R.id.empty_view);
+//        listView.setEmptyView(emptyView);
+      //  arrayAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, numbers);
+        arrayAdapter=new personalDetailAdapter(getApplicationContext(),0,numbers);
         listView.setAdapter(arrayAdapter);
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.NewNumber);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -129,7 +141,14 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         } else if (key.equalsIgnoreCase("time")) {
 
                                         } else {
-                                            numbers.add(key);
+                                            HashMap numberDetails = (HashMap) phone.getValue();
+                                            name = (String) numberDetails.get("name");
+                                            request = (String) numberDetails.get("request");
+                                            Status = (String) numberDetails.get("status");
+                                            update = (String) numberDetails.get("update");
+                                         //   numbers.add(key);
+                                            numbers.add(new localdata("" + "", Status, key, "", request, utilityConstant.ON, update, name));
+
                                         }
 
                                     }
@@ -180,7 +199,14 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                         } else if (key.equalsIgnoreCase("time")) {
 
                         } else {
-                            numbers.add(key);
+                            HashMap numberDetails = (HashMap) phone.getValue();
+                            name = (String) numberDetails.get("name");
+                            request = (String) numberDetails.get("request");
+                            Status = (String) numberDetails.get("status");
+                            update = (String) numberDetails.get("update");
+                           // numbers.add(key);
+                            numbers.add(new localdata("" + "", Status, key, "", request, utilityConstant.ON, update, name));
+
                         }
 
                     }
@@ -364,7 +390,8 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             public void onClick(DialogInterface dialog, int which) {
                 String Request;
                 Request = storeUserRequest.getString(utilityConstant.requestCatche, "null");
-                String idlocal = "/matchID-" + intent.getLongExtra("matchId", -2) + "/" + numbers.get((int) idDelete);
+                localdata localdata= (pojo.localdata) numbers.get((int) idDelete);
+                String idlocal = "/matchID-" + intent.getLongExtra("matchId", -2) + "/" +localdata.getPhonenumber();
                 DatabaseReference DeleteNumber = database.getReference(Request + idlocal);
                 DeleteNumber.removeValue();
             }

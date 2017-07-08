@@ -5,19 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="20dp"
     >
-
-    <TextView
-        android:text="Start Match Coverage"
-        android:textColor="@color/defult"
-        android:fontFamily="cursive"
-        android:textSize="25dp"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
 
     <!--<Spinner-->
         <!--android:id="@+id/spinner2"-->
@@ -25,30 +13,51 @@
         <!--android:layout_height="wrap_content" />-->
 
     <LinearLayout
-        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_height="wrap_content">
+        android:weightSum="1">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/wahab" />
 
         <TextView
-            android:id="@+id/oneVsTwo"
-            android:textStyle="bold"
-            android:textSize="20dp"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="5"
-            android:text="Pakistan vs West Indies"
-            android:textColor="@color/defult"
-            />
+            android:paddingTop="60sp"
+            android:text="VS"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="VS" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:src="@drawable/wahab" />
+
+        <Switch
+            android:id="@+id/scset"
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+
+            android:layout_weight="0.85" />
 
     </LinearLayout>
 
-    <Switch
-        android:id="@+id/scset"
+    <TextView
+        android:id="@+id/oneVsTwo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        />
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Pakistan vs West Indies"
+        android:textColor="@color/defult"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/setCoverage"

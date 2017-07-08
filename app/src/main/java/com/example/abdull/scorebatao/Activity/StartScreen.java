@@ -4,7 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +29,7 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +45,8 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -59,6 +65,8 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
     private CallbackManager callbackManager;
     private SharedPreferences sharedpreferences;
     ProgressDialog progress;
+    private Handler hand = new Handler();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,16 +253,21 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         if (v.equals(LoginButton)) {
+          //  check();
             if (email.getText().toString().trim().equals("") || password.getText().toString().trim().equals("")) {
                 utilityConstant.showToast(getApplicationContext(), "Empty Field");
 
-            } else {
+            } else if(!checkConnectivity()){
+                utilityConstant.showToast(getApplicationContext(),"No Network Connect");
+            }
+            else
+                {
 
-                 progress = new ProgressDialog(this);
+                progress = new ProgressDialog(this);
                 progress.setTitle("Loading");
-                 progress.setMessage("Signing in Please Wait...");
-               progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-                 progress.show();
+                progress.setMessage("Signing in Please Wait...");
+                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                progress.show();
 
 
                 mAuth.signInWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
@@ -276,15 +289,17 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                                     progress.dismiss();
                                     utilityConstant.showToast(getApplicationContext(), "" + e);
                                 } catch (Exception e) {
+                                    utilityConstant.showToast(getApplicationContext(),e+"");
 
                                 }
 
                                 if (!task.isSuccessful()) {
                                     Log.w("signin", "signInWithEmail:failed", task.getException());
                                 }
-
                             }
+
                         });
+
 
             }
 
@@ -294,6 +309,7 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         } else if (v.equals(forgetButton)) {
             postDailog();
         }
+
     }
 
     @Override
@@ -421,5 +437,41 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
         editor.putString(utilityConstant.signInMethod, SigninMethod);
         editor.commit();
     }
+
+    boolean checkConnectivity()
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+            activeNetwork.isConnected();
+    }
+
+    void check()
+    {
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        connectedRef.addValueEventListener((new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    System.out.println("connected");
+                    utilityConstant.showToast(getApplicationContext(),"Connect");
+
+                } else {
+                    utilityConstant.showToast(getApplicationContext(),"DisConnect");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        }));
+    }
+
 
 }

@@ -2,6 +2,9 @@
     <string name="app_name">ScoreBatao</string>
     <string name="facebook_app_id">283558618714406</string>
     <string name="fb_login_protocol_scheme">fb283558618714406</string>
+    <string name="empty_view_title_text">No Match Played at this Moment</string>
+    <string name="empty_view_subtitle_text">Insert Number please..</string>
+    <string name="loading">Loading...</string>
     <string-array name="timeofMatch">
         <item>1</item>
         <item>2</item>
