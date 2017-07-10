@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -78,11 +79,27 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
         TextView teamOne = (TextView) convertView.findViewById(R.id.teamOne);
 
         TextView teamTwo = (TextView) convertView.findViewById(R.id.teamTwo);
+        ImageView teamFlagOne= (ImageView) convertView.findViewById(R.id.teamFlagOne);
+        ImageView teamFlagTwo= (ImageView) convertView.findViewById(R.id.teamFlagTwo);
+
+
+
+
+
+
 
         matches = (currentLiveMatches) (currentLiveMatches) liveMatches.get(position);
         matchID = matches.getUnique_ID();
+
+
         teamOne.setText(matches.getTeamOne());
         teamTwo.setText(matches.getTeamTwo());
+
+
+
+        teamFlagOne.setImageDrawable(context.getResources().getDrawable(flagOfTeam(matches.getTeamOne())));
+        teamFlagTwo.setImageDrawable(context.getResources().getDrawable(flagOfTeam(matches.getTeamTwo())));
+
 
 //        oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
         setCoverage = (Button) convertView.findViewById(R.id.setCoverage);
@@ -371,5 +388,19 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
             getContext().startActivity(addPerson);
         }
 
+    }
+
+    public  int flagOfTeam(String team)
+    {
+        HashMap<String,Integer> flag=utilityConstant.storeFlag();
+
+        for (HashMap.Entry set:flag.entrySet()) {
+
+            if(team.contains(set.getKey().toString()))
+            {
+                return (int) set.getValue();
+            }
+        }
+        return R.drawable.wahab;
     }
 }

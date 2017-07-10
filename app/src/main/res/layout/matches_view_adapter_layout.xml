@@ -19,7 +19,7 @@
         android:weightSum="1">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/teamFlagOne"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:src="@drawable/wahab" />
@@ -35,7 +35,7 @@
             tools:text="VS" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/teamFlagTwo"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="false"
@@ -62,7 +62,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.06"
-            android:paddingLeft="20dp"
             android:text="PAK"
             android:textColor="#360101"
             android:textSize="20dp"
@@ -72,7 +71,7 @@
             android:id="@+id/teamTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.12"
+            android:layout_weight="0.16"
             android:text="ENG"
             android:textColor="#360101"
             android:textSize="20dp"

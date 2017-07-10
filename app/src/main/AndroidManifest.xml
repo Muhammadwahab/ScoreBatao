@@ -35,7 +35,9 @@
             android:parentActivityName="com.example.abdull.scorebatao.Activity.listOfMatch"
             />
         <activity android:name=".Activity.AddPersons" />
-        <activity android:name=".Activity.signupAccount"></activity>
+        <activity android:name=".Activity.signupAccount"
+            android:parentActivityName="com.example.abdull.scorebatao.Activity.StartScreen"
+            ></activity>
 
         <service android:name=".Activity.services"
             android:stopWithTask="false"

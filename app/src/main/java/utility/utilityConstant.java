@@ -1,7 +1,13 @@
 package utility;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
+
+import com.example.abdull.scorebatao.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by abdull on 5/31/17.
@@ -35,6 +41,62 @@ public class utilityConstant {
     public static String EVEN_SIX_DETAIL = "";
     public static String EVEN_NO_RUN_DETAIL = "";
     public static String lastRetireveOver = "lastRetireveOver";
+
+    public static HashMap storeFlag()
+    {
+        HashMap<String,Integer> flags=new HashMap();
+        flags.put("India", R.drawable.india);
+        flags.put("Pakistan", R.drawable.pakistan);
+        flags.put("Zimbabwe", R.drawable.zimbabwe);
+        flags.put("Afghanistan", R.drawable.afghanistan);
+        flags.put("Australia", R.drawable.australia);
+        flags.put("Bangladesh", R.drawable.bangladesh);
+        flags.put("South Africa", R.drawable.southafrica);
+        flags.put("New Zealand", R.drawable.newzeland);
+        flags.put("UAE", R.drawable.uae);
+        flags.put("Ireland", R.drawable.ireland);
+        flags.put("England", R.drawable.england);
+        flags.put("Sri Lanka", R.drawable.srilanka);
+        flags.put("West Indies", R.drawable.westindies);
+        flags.put("Scotland", R.drawable.scotland);
+        flags.put("Worcestershire", R.drawable.worcestershire);
+        flags.put("Gloucestershire", R.drawable.gloucestershire);
+        flags.put("Yorkshire", R.drawable.yorkshire);
+        flags.put("Northamptonshire", R.drawable.northamptonshire);
+        flags.put("Hampshire", R.drawable.hampshire);
+        flags.put("Sussex", R.drawable.sussex);
+        flags.put("Kent", R.drawable.kent);
+        flags.put("Surrey", R.drawable.surrey);
+        flags.put("Middlesex", R.drawable.middlesex);
+        flags.put("Somerset", R.drawable.somerset);
+        flags.put("Essex", R.drawable.essex);
+        flags.put("Leicestershire", R.drawable.leicestershire);
+        flags.put("Warwickshire", R.drawable.warwickshire);
+        flags.put("Lancashire", R.drawable.lancashire);
+        flags.put("Nottinghamshire", R.drawable.nottinghamshire);
+
+
+
+
+        return flags;
+
+    }
+    public static int flagOfTeam(String team)
+    {
+        HashMap<String,Integer> flag=storeFlag();
+
+        for (HashMap.Entry set:flag.entrySet()) {
+
+            if(set.getKey().equals(team))
+            {
+                return (int) set.getValue();
+            }
+
+
+        }
+        return 0;
+    }
+
 
 
 

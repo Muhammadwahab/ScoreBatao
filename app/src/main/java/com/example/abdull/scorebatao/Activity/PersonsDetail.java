@@ -88,11 +88,13 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 deleteNumber(id);
+
             }
         });
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 postDailog();
 
             }
@@ -361,7 +363,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         return "null";
     }
 
-    private void postDailog() {
+    private void postDailog(localdata localdata) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -373,6 +375,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
         final Button save = (Button) dialogView.findViewById(R.id.Save); //here
         final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
+        name.setText(localdata.getName());
+        PhoneNumber.setText(localdata.getPhonenumber());
+        name.setText(localdata.getName());
         // Spinner element
         // final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
         // radio buttons
@@ -390,6 +395,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
         // horizontal layout for buttons
         horizontalLinearButtons = (LinearLayout) dialogView.findViewById(R.id.horizontalButton);
+        builder.setView(dialogView);
+        final AlertDialog dialogUpdate = builder.create();
+        dialogUpdate.show();
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -458,9 +466,126 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                 }
             }
         });
+        discard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogUpdate.dismiss();
+
+            }
+        });
+
+    }
+    private void postDailog() {
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // get layout inflator for setting layout in dailog
+        LayoutInflater inflater = getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.activity_add_persons, null);
+
+        final EditText name = (EditText) dialogView.findViewById(R.id.phoneName); //here
+        final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
+        final Button save = (Button) dialogView.findViewById(R.id.Save); //here
+        final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
+        // Spinner element
+        // final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
+        // radio buttons
+        RadioButton Interval = (RadioButton) dialogView.findViewById(R.id.radio_interval);
+        RadioButton Event = (RadioButton) dialogView.findViewById(R.id.radio_event);
+        RadioButton OffRadio = (RadioButton) dialogView.findViewById(R.id.radio_Of);
+
+        // adding onCheck Listener in radio button
+
+        Interval.setOnCheckedChangeListener(this);
+        Event.setOnCheckedChangeListener(this);
+        OffRadio.setOnCheckedChangeListener(this);
+
+        // linear layout for adding child
+        linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
+        // horizontal layout for buttons
+        horizontalLinearButtons = (LinearLayout) dialogView.findViewById(R.id.horizontalButton);
+
         builder.setView(dialogView);
-        AlertDialog dialogUpdate = builder.create();
+        final AlertDialog dialogUpdate = builder.create();
         dialogUpdate.show();
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+//
+//                ProgressDialog progress = new ProgressDialog(PersonsDetail.this);
+//                progress.setTitle("Loading");
+//                progress.setMessage("Wait while loading...");
+//                progress.setCancelable(true); // disable dismiss by tapping outside of the dialog
+//                progress.show();
+//// To dismiss the dialog
+//              //  progress.dismiss();
+                final String phoneNumber = PhoneNumber.getText().toString().trim();
+                Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
+                Matcher m = p.matcher(phoneNumber);
+                if (!m.matches()) {
+                    utilityConstant.showToast(getApplicationContext(),"Invalid PhoneNumber");
+
+                } else {
+                    String Request;
+                    if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
+                        // Read from the database
+                        myRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                // This method is called once with the initial value and again
+                                // whenever data at this location is updated.
+                                Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
+
+                                for (DataSnapshot child : childrenData) {
+//                    DatabaseReference databaseReference=child.getRef();
+//                    databaseReference.
+                                    HashMap hashMap = (HashMap) child.getValue();
+                                    String email = (String) hashMap.get("email");
+                                    if (email.equalsIgnoreCase(intent.getStringExtra("Email"))) {
+                                        DatabaseReference databaseReference = child.getRef();
+                                        String reference = databaseReference.toString() + "/" + "id";
+                                        StringBuilder stringBuilder = new StringBuilder(reference);
+                                        String refvalue = stringBuilder.replace(0, 40, "").toString();
+                                        DatabaseReference setMatchID = database.getReference(refvalue);
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
+                                        SharedPreferences.Editor editor = storeUserRequest.edit();
+                                        editor.putString(utilityConstant.requestCatche, refvalue);
+                                        editor.commit();
+                                        break;
+
+                                    }
+
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError error) {
+                                // Failed to read value
+                                Log.w("Read Failed", "Failed to read value.", error.toException());
+                            }
+                        });
+                    } else {
+                        DatabaseReference setMatchID = database.getReference(Request);
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                    }
+                }
+            }
+        });
+
+        discard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogUpdate.dismiss();
+
+            }
+        });
+
+
     }
 
     @Override
@@ -490,9 +615,11 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
-        optionBuilder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+        optionBuilder.setNegativeButton("Update", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                postDailog((pojo.localdata) numbers.get((int) idDelete));
 
             }
         });

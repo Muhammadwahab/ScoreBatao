@@ -1,87 +1,88 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="#caa08fc7"
-    android:padding="10dp">
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:background="#ca3b00c1"
+android:padding="10dp">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<RelativeLayout
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/phoneID"
-            android:layout_alignEnd="@+id/updateType"
-            android:layout_below="@+id/updateType"
-            android:text="Request :" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/phoneID"
+        android:layout_alignEnd="@+id/updateType"
+        android:layout_below="@+id/updateType"
+        android:text="Request :"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/updateType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/updateID"
-            android:text="Update :"
-            android:layout_alignParentTop="true"
-            android:layout_alignBottom="@+id/updateID" />
+    <TextView
+        android:id="@+id/updateType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/updateID"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/updateID"
+        android:text="Update :"
+        android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/updateID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:text="INTERVAL"
-            android:layout_alignParentEnd="true" />
+<TextView
+android:id="@+id/updateID"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_alignParentTop="true"
+android:text="INTERVAL"
+android:layout_alignParentEnd="true" />
 
-        <TextView
-            android:id="@+id/updateRequest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/phoneID"
-            android:text="FOUR"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/updateID" />
+<TextView
+android:id="@+id/updateRequest"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_alignBottom="@+id/phoneID"
+android:text="FOUR"
+android:layout_alignParentEnd="true"
+android:layout_below="@+id/updateID" />
 
 
-        <TextView
-            android:id="@+id/nameID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Wahab"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+<TextView
+android:id="@+id/nameID"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_weight="1"
+android:text="Wahab"
+android:textSize="20sp"
+android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/phoneID"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/nameID"
-            android:text="03471218967"
-            android:textColor="#ece6e6"
-            android:textSize="12sp" />
-    </RelativeLayout>
+<TextView
+android:id="@+id/phoneID"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@id/nameID"
+android:text="03471218967"
+android:textColor="#ece6e6"
+android:textSize="12sp" />
+</RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<RelativeLayout
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ON"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+<TextView
+android:id="@+id/status"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="ON"
+android:layout_alignParentTop="true"
+android:layout_alignParentEnd="true" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status" />
-    </RelativeLayout>
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Status" />
+</RelativeLayout>
 
 </LinearLayout>
