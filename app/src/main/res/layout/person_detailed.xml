@@ -1,17 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    android:id="@+id/main_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_centerInParent="false">
 
     <ListView
 
         android:id="@+id/addPerson"
-        android:background="@color/cardview_dark_background"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:visibility="visible"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_dark_background" />
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/empty_view_for_personalDetail"
+        android:layout_width="match_parent"
+        android:layout_height="156dp"
+        android:layout_centerInParent="true">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:indeterminate="true"
+            android:indeterminateTint="@android:color/holo_red_dark"
+            android:indeterminateTintMode="src_over" />
+
+        <ImageView
+            android:id="@+id/empty_shelter_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/empty_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:fontFamily="sans-serif-medium"
+            android:foregroundTint="@drawable/com_facebook_button_background"
+            android:paddingTop="16dp"
+            android:text="@string/loading"
+            android:textAppearance="?android:textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/empty_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/empty_shelter_image"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-medium"
+            android:paddingTop="16dp"
+            android:text="@string/empty_view_title_text"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/empty_subtitle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/empty_title_text"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif"
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:text="empty_view_subtitle_text"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="#A2AAB0"
+            android:visibility="gone" />
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/NewNumber"
@@ -20,9 +86,10 @@
         android:layout_gravity="bottom|right"
         android:clickable="true"
         android:visibility="visible"
-        app:layout_anchorGravity="bottom|right|end"
         app:elevation="1dp"
         app:fabSize="normal"
+        app:layout_anchorGravity="bottom|right|end"
         app:srcCompat="@android:drawable/ic_input_add" />
+
 
 </android.support.design.widget.CoordinatorLayout>

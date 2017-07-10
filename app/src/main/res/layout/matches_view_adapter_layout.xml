@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <!--<Spinner-->
-        <!--android:id="@+id/spinner2"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
+    <!--android:id="@+id/spinner2"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content" />-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#90c7b5"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -31,6 +31,7 @@
             android:paddingTop="60sp"
             android:text="VS"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/com_facebook_button_background_color"
             tools:text="VS" />
 
         <ImageView
@@ -42,29 +43,48 @@
 
         <Switch
             android:id="@+id/scset"
-            android:layout_width="90dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
 
-            android:layout_weight="0.85" />
+            android:background="#39864b"
+            android:foregroundTint="@color/cardview_dark_background" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/oneVsTwo"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Pakistan vs West Indies"
-        android:textColor="@color/defult"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:background="#39864b"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/teamOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.06"
+            android:paddingLeft="20dp"
+            android:text="PAK"
+            android:textColor="#360101"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/teamTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.12"
+            android:text="ENG"
+            android:textColor="#360101"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/setCoverage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#60000000"
-        android:text="Send Score Update"
+        android:text="Set Score Update"
         android:textColor="@color/defult" />
 
 </LinearLayout>

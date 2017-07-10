@@ -57,6 +57,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
     String request;
     String Status;
     String update;
+    private boolean multipleMatchesCheck;
 
     public currentMatchesAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList live) {
         super(context, resource, live);
@@ -73,11 +74,17 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.matches_view_adapter_layout, parent, false);
 
         storeUserRequest = ((Activity) context).getSharedPreferences(utilityConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
+       // TextView oneVsTwo = (TextView) convertView.findViewById(R.id.oneVsTwo);
+        TextView teamOne = (TextView) convertView.findViewById(R.id.teamOne);
+
+        TextView teamTwo = (TextView) convertView.findViewById(R.id.teamTwo);
+
         matches = (currentLiveMatches) (currentLiveMatches) liveMatches.get(position);
         matchID = matches.getUnique_ID();
+        teamOne.setText(matches.getTeamOne());
+        teamTwo.setText(matches.getTeamTwo());
 
-        oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
+//        oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
         setCoverage = (Button) convertView.findViewById(R.id.setCoverage);
         setCoverage.setOnClickListener(this);
         setCoverage.setTag(position);
@@ -109,10 +116,168 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                 final currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) buttonView.getTag());
                 utilityConstant.showToast(context, "onoff id ");
                 if (isChecked) {
-                    if (!checkOnOf) {
+
+                    if (helper.showRecord().size() ==0) {
+
+                        if (!checkOnOf) {
+                            String Request;
+                            if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
+
+                                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        // This method is called once with the initial value and again
+                                        // whenever data at this location is updated.
+                                        Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
+
+                                        for (DataSnapshot child : childrenData) {
+                                            HashMap hashMap = (HashMap) child.getValue();
+                                            final String email = (String) hashMap.get("email");
+
+                                            if (email.equalsIgnoreCase(((Activity) context).getIntent().getStringExtra("Email"))) {
+                                                DatabaseReference databaseReference = child.getRef();
+                                                String id = "matchID-" + matches.getUnique_ID();
+                                                String reference = databaseReference.toString() + "/" + "id" + "/" + id;
+
+                                                // storing in sharedprefference
+
+                                                String storeLocalReference = databaseReference.toString() + "/" + "id";
+                                                StringBuilder stringLocalBuilder = new StringBuilder(storeLocalReference);
+                                                SharedPreferences.Editor editor = storeUserRequest.edit();
+                                                editor.putString(utilityConstant.requestCatche, stringLocalBuilder.replace(0, 40, "").toString());
+                                                editor.commit();
+                                                // end storing in shared prefference
+
+
+                                                StringBuilder stringBuilder = new StringBuilder(reference);
+                                                String refvalue = stringBuilder.replace(0, 40, "").toString();
+                                                DatabaseReference getMatchID = database.getReference(refvalue);
+                                                getMatchID.child("userstatus").setValue("on");
+                                                getMatchID.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                                        Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
+                                                        ArrayList numbers = new ArrayList();
+                                                        for (DataSnapshot phone : childPhoneNumber) {
+                                                            String key = phone.getKey();
+                                                            if (key.equalsIgnoreCase("userstatus") || key.equalsIgnoreCase("time")) {
+
+                                                            } else {
+                                                                HashMap numberDetails = (HashMap) phone.getValue();
+                                                                name = (String) numberDetails.get("name");
+                                                                request = (String) numberDetails.get("request");
+                                                                Status = (String) numberDetails.get("status");
+                                                                update = (String) numberDetails.get("update");
+                                                                numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
+                                                            }
+
+                                                        }
+                                                        utilityConstant.showToast(context, "service check");
+
+                                                        helper insert = new helper(context);
+                                                        long idCheck = insert.insertData(numbers);
+                                                        utilityConstant.showToast(context, "" + idCheck);
+                                                        if (idCheck != -1) {
+                                                            utilityConstant.showToast(context, "Service Start");
+                                                            ((Activity) context).startService(new Intent(getContext(), services.class));
+                                                            // event Service
+                                                            ((Activity) context).startService(new Intent(getContext(), EventService.class));
+
+
+                                                        } else {
+                                                            utilityConstant.showToast(context, "Error in Database");
+                                                        }
+                                                    }
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                                break;
+                                                // break when email address find
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                        Log.w("Read Failed", "Failed to read value.", error.toException());
+                                    }
+                                });
+                            } else {
+                                utilityConstant.showToast(context, "service check");
+
+                                String id = "matchID-" + matches.getUnique_ID();
+                                DatabaseReference databaseReference = database.getReference(Request + "/" + id);
+                                databaseReference.child("userstatus").setValue("on");
+                                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
+                                        ArrayList numbers = new ArrayList();
+                                        String status = "", times = "";
+                                        for (DataSnapshot phone : childPhoneNumber) {
+                                            String key = phone.getKey();
+                                            if (key.equalsIgnoreCase("userstatus")) {
+                                                status = phone.getValue().toString();
+
+                                            } else if (key.equalsIgnoreCase("time")) {
+                                                times = phone.getValue().toString();
+
+                                            } else {
+                                                HashMap numberDetails = (HashMap) phone.getValue();
+                                                name = (String) numberDetails.get("name");
+                                                request = (String) numberDetails.get("request");
+                                                Status = (String) numberDetails.get("status");
+                                                update = (String) numberDetails.get("update");
+                                                numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
+                                            }
+                                        }
+                                        helper insert = new helper(context);
+                                        long idCheck = insert.insertData(numbers);
+                                        utilityConstant.showToast(context, "" + idCheck);
+
+                                        if (idCheck != -1) {
+                                            utilityConstant.showToast(context, "Service Start");
+
+                                            ((Activity) context).startService(new Intent(getContext(), services.class));
+                                            ((Activity) context).startService(new Intent(getContext(), EventService.class));
+
+
+                                        } else {
+                                            utilityConstant.showToast(context, "Error in Database");
+
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        utilityConstant.showToast(getContext(),"Sorry you Only Have One Match Coverage Allowed At a time ");
+                        multipleMatchesCheck=true;
+                        OnOff.setChecked(false);
+                    }
+                } else {
+                    // The toggle is disabled
+                    if (!multipleMatchesCheck) {
+                        checkOnOf = false;
+                        utilityConstant.CHECKCOUNT = 0;
+                        utilityConstant.showToast(context, "Disable");
                         String Request;
                         if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
-
                             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -142,53 +307,21 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             StringBuilder stringBuilder = new StringBuilder(reference);
                                             String refvalue = stringBuilder.replace(0, 40, "").toString();
                                             DatabaseReference getMatchID = database.getReference(refvalue);
-                                            getMatchID.child("userstatus").setValue("on");
-                                            getMatchID.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            getMatchID.child("userstatus").setValue("OFF");
+                                            helper insert = new helper(context);
+                                            ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
+                                            ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
 
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                                    Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
-                                                    ArrayList numbers = new ArrayList();
-                                                    for (DataSnapshot phone : childPhoneNumber) {
-                                                        String key = phone.getKey();
-                                                        if (key.equalsIgnoreCase("userstatus") || key.equalsIgnoreCase("time")) {
-
-                                                        } else {
-                                                            HashMap numberDetails = (HashMap) phone.getValue();
-                                                            name = (String) numberDetails.get("name");
-                                                            request = (String) numberDetails.get("request");
-                                                            Status = (String) numberDetails.get("status");
-                                                            update = (String) numberDetails.get("update");
-                                                            numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
-                                                        }
-
-                                                    }
-                                                    utilityConstant.showToast(context, "service check");
-
-                                                    helper insert = new helper(context);
-                                                    long idCheck = insert.insertData(numbers);
-                                                    utilityConstant.showToast(context, "" + idCheck);
-                                                    if (idCheck != -1) {
-                                                        utilityConstant.showToast(context, "Service Start");
-                                                        ((Activity) context).startService(new Intent(getContext(), services.class));
-                                                        // event Service
-                                                        ((Activity) context).startService(new Intent(getContext(), EventService.class));
+                                            insert.deleteAll();
 
 
-                                                    } else {
-                                                        utilityConstant.showToast(context, "Error in Database");
-                                                    }
-                                                }
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                }
-                                            });
                                             break;
                                             // break when email address find
+
                                         }
+
                                     }
+
                                 }
 
                                 @Override
@@ -197,134 +330,23 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                 }
                             });
                         } else {
-                            utilityConstant.showToast(context, "service check");
-
                             String id = "matchID-" + matches.getUnique_ID();
                             DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                            databaseReference.child("userstatus").setValue("on");
-                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
+                            databaseReference.child("userstatus").setValue("OFF");
+                            helper insert = new helper(context);
+                            ((Activity) context).stopService(new Intent(getContext(), services.class));
+                            ((Activity) context).stopService(new Intent(getContext(), EventService.class));
 
-                                    Iterable<DataSnapshot> childPhoneNumber = dataSnapshot.getChildren();
-                                    ArrayList numbers = new ArrayList();
-                                    String status = "", times = "";
-                                    for (DataSnapshot phone : childPhoneNumber) {
-                                        String key = phone.getKey();
-                                        if (key.equalsIgnoreCase("userstatus")) {
-                                            status = phone.getValue().toString();
-
-                                        } else if (key.equalsIgnoreCase("time")) {
-                                            times = phone.getValue().toString();
-
-                                        } else {
-                                            HashMap numberDetails = (HashMap) phone.getValue();
-                                            name = (String) numberDetails.get("name");
-                                            request = (String) numberDetails.get("request");
-                                            Status = (String) numberDetails.get("status");
-                                            update = (String) numberDetails.get("update");
-                                            numbers.add(new localdata(matches.getUnique_ID() + "", Status, key, ((Activity) context).getIntent().getStringExtra("Email"), request, utilityConstant.ON, update, name));
-                                        }
-                                    }
-                                    helper insert = new helper(context);
-                                    long idCheck = insert.insertData(numbers);
-                                    utilityConstant.showToast(context, "" + idCheck);
-
-                                    if (idCheck != -1) {
-                                        utilityConstant.showToast(context, "Service Start");
-
-                                        ((Activity) context).startService(new Intent(getContext(), services.class));
-                                        ((Activity) context).startService(new Intent(getContext(), EventService.class));
-
-
-                                    } else {
-                                        utilityConstant.showToast(context, "Error in Database");
-
-                                    }
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-
+                            insert.deleteAll();
                         }
-                    }
 
-
-                } else {
-                    // The toggle is disabled
-                    if (!checkOFF) {
 
                     }
-                    checkOnOf = false;
-                    utilityConstant.CHECKCOUNT = 0;
-                    utilityConstant.showToast(context, "Disable");
-                    String Request;
-                    if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
-                        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                // This method is called once with the initial value and again
-                                // whenever data at this location is updated.
-                                Iterable<DataSnapshot> childrenData = dataSnapshot.getChildren();
-
-                                for (DataSnapshot child : childrenData) {
-                                    HashMap hashMap = (HashMap) child.getValue();
-                                    final String email = (String) hashMap.get("email");
-
-                                    if (email.equalsIgnoreCase(((Activity) context).getIntent().getStringExtra("Email"))) {
-                                        DatabaseReference databaseReference = child.getRef();
-                                        String id = "matchID-" + matches.getUnique_ID();
-                                        String reference = databaseReference.toString() + "/" + "id" + "/" + id;
-
-                                        // storing in sharedprefference
-
-                                        String storeLocalReference = databaseReference.toString() + "/" + "id";
-                                        StringBuilder stringLocalBuilder = new StringBuilder(storeLocalReference);
-                                        SharedPreferences.Editor editor = storeUserRequest.edit();
-                                        editor.putString(utilityConstant.requestCatche, stringLocalBuilder.replace(0, 40, "").toString());
-                                        editor.commit();
-                                        // end storing in shared prefference
-
-
-                                        StringBuilder stringBuilder = new StringBuilder(reference);
-                                        String refvalue = stringBuilder.replace(0, 40, "").toString();
-                                        DatabaseReference getMatchID = database.getReference(refvalue);
-                                        getMatchID.child("userstatus").setValue("OFF");
-                                        helper insert = new helper(context);
-                                        ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
-                                        ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
-
-                                        insert.deleteAll();
-
-
-                                        break;
-                                        // break when email address find
-
-                                    }
-
-                                }
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError error) {
-                                Log.w("Read Failed", "Failed to read value.", error.toException());
-                            }
-                        });
-                    } else {
-                        String id = "matchID-" + matches.getUnique_ID();
-                        DatabaseReference databaseReference = database.getReference(Request + "/" + id);
-                        databaseReference.child("userstatus").setValue("OFF");
-                        helper insert = new helper(context);
-                        ((Activity) context).stopService(new Intent(getContext(), services.class));
-                        ((Activity) context).stopService(new Intent(getContext(), EventService.class));
-
-                        insert.deleteAll();
+                    else
+                    {
+                        multipleMatchesCheck=false;
                     }
+
 
                 }
             }

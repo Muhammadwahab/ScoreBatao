@@ -20,10 +20,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.TextView;
+
 import com.example.abdull.scorebatao.R;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,7 +75,9 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        ListView listView = (ListView) findViewById(R.id.addPerson);
+        final ListView listView = (ListView) findViewById(R.id.addPerson);
+        final View emptyView = findViewById(R.id.empty_view_for_personalDetail);
+        listView.setEmptyView(emptyView);
 //        View emptyView = findViewById(R.id.empty_view);
 //        listView.setEmptyView(emptyView);
       //  arrayAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, numbers);
@@ -152,6 +158,21 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         }
 
                                     }
+                                    if (numbers.size()==0) {
+                                        View emptyView = findViewById(R.id.empty_view_for_personalDetail);
+                                        TextView emptyLoading= (TextView) findViewById(R.id.empty_loading);
+                                        TextView emptyTitle= (TextView) findViewById(R.id.empty_title_text);
+                                        TextView emptysubTitle= (TextView) findViewById(R.id.empty_subtitle_text);
+                                        ImageView imageView= (ImageView) findViewById(R.id.empty_shelter_image);
+                                        ProgressBar progress= (ProgressBar)findViewById(R.id.progressBar);
+                                        progress.setVisibility(View.GONE);
+                                        emptyTitle.setVisibility(View.VISIBLE);
+                                        emptysubTitle.setVisibility(View.VISIBLE);
+                                        emptyLoading.setVisibility(View.GONE);
+                                        imageView.setVisibility(View.VISIBLE);
+                                        emptyLoading.setVisibility(View.GONE);
+                                        listView.setEmptyView(emptyView);
+                                    }
 //                                    arrayAdapter.clear();
 //                                    arrayAdapter.addAll(numbers);
                                     arrayAdapter.notifyDataSetChanged();
@@ -161,6 +182,33 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
+
+//                                    final View emptyView = findViewById(R.id.empty_view);
+//                                    TextView emptyLoading= (TextView) findViewById(R.id.empty_loading);
+//                                    TextView emptyTitle= (TextView) findViewById(R.id.empty_title_text);
+//                                    TextView emptysubTitle= (TextView) findViewById(R.id.empty_subtitle_text);
+//                                    ImageView imageView= (ImageView) findViewById(R.id.empty_shelter_image);
+//                                    final ProgressBar progress= (ProgressBar)findViewById(R.id.progressBar);
+//                                    imageView.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            progress.setVisibility(View.GONE);
+//                                            listView.setEmptyView(emptyView);
+//
+//
+//                                        }
+//                                    });
+//
+//                                    progress.setVisibility(View.GONE);
+//                                    emptyTitle.setVisibility(View.VISIBLE);
+//                                    emptyTitle.setText("NO Network Found");
+//                                    emptysubTitle.setText("Check Internet Connection Please tab Image To Retry");
+//                                    emptysubTitle.setVisibility(View.VISIBLE);
+//                                    emptyLoading.setVisibility(View.GONE);
+//                                    imageView.setVisibility(View.VISIBLE);
+//                                    emptyLoading.setVisibility(View.GONE);
+//                                    listView.setEmptyView(emptyView);
+//                                    utilityConstant.showToast(getApplicationContext(),"Error");
 
                                 }
                             });
@@ -209,6 +257,24 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
                         }
 
+
+                    }
+                    if (numbers.size()==0) {
+                        View emptyView = findViewById(R.id.empty_view_for_personalDetail);
+                        TextView emptyLoading= (TextView) findViewById(R.id.empty_loading);
+                        TextView emptyTitle= (TextView) findViewById(R.id.empty_title_text);
+                        TextView emptysubTitle= (TextView) findViewById(R.id.empty_subtitle_text);
+                        ImageView imageView= (ImageView) findViewById(R.id.empty_shelter_image);
+                        ProgressBar progress= (ProgressBar)findViewById(R.id.progressBar);
+                        emptyTitle.setText("No User Found ");
+                        emptysubTitle.setText("Add Number For set Coverage");
+                        progress.setVisibility(View.GONE);
+                        emptyTitle.setVisibility(View.VISIBLE);
+                        emptysubTitle.setVisibility(View.VISIBLE);
+                        emptyLoading.setVisibility(View.GONE);
+                        imageView.setVisibility(View.VISIBLE);
+                        emptyLoading.setVisibility(View.GONE);
+                        listView.setEmptyView(emptyView);
                     }
 //                                    arrayAdapter.clear();
 //                                    arrayAdapter.addAll(numbers);
@@ -219,6 +285,33 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
+
+//                    final View emptyView = findViewById(R.id.empty_view);
+//                    TextView emptyLoading= (TextView) findViewById(R.id.empty_loading);
+//                    TextView emptyTitle= (TextView) findViewById(R.id.empty_title_text);
+//                    TextView emptysubTitle= (TextView) findViewById(R.id.empty_subtitle_text);
+//                    ImageView imageView= (ImageView) findViewById(R.id.empty_shelter_image);
+//                    final ProgressBar progress= (ProgressBar)findViewById(R.id.progressBar);
+//                    imageView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            progress.setVisibility(View.GONE);
+//                            listView.setEmptyView(emptyView);
+//
+//
+//                        }
+//                    });
+//
+//                    progress.setVisibility(View.GONE);
+//                    emptyTitle.setVisibility(View.VISIBLE);
+//                    emptyTitle.setText("NO Network Found");
+//                    emptysubTitle.setText("Check Internet Connection Please tab Image To Retry");
+//                    emptysubTitle.setVisibility(View.VISIBLE);
+//                    emptyLoading.setVisibility(View.GONE);
+//                    imageView.setVisibility(View.VISIBLE);
+//                    emptyLoading.setVisibility(View.GONE);
+//                    listView.setEmptyView(emptyView);
+//                    utilityConstant.showToast(getApplicationContext(),"Error");
 
                 }
             });

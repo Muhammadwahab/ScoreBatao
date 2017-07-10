@@ -81,6 +81,8 @@ public class EventService extends Service {
     };
     private boolean checkException;
     SharedPreferences storeUserRequest;
+    private String battingTeam,bowlingTeam;
+    private boolean store;
 
 
     @Override
@@ -180,10 +182,13 @@ public class EventService extends Service {
     public void getScore(String response, ArrayList data) {
         JSONTokener jsonTokener = new JSONTokener(response);
         String Score = "";
+        store=false;
         try {
+
 
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
             JSONArray oversArray = jsonObject.getJSONArray("data");
+            JSONArray teams = jsonObject.getJSONArray("team");
             for (int i = 0; i < oversArray.length(); i++) {
                 JSONObject singleOver = oversArray.getJSONObject(i);
                 if (singleOver.getJSONArray("ball").length() >= 6) {
@@ -200,9 +205,13 @@ public class EventService extends Service {
                                 break;
 
                             }
-                            SharedPreferences.Editor editor = storeUserRequest.edit();
-                            editor.putString(utilityConstant.lastRetireveOver,ballDetail.getString("overs_actual") );
-                            editor.commit();
+                            if (!store) // agar store true ho ga to preference me store ni ho ga
+                            {
+                                SharedPreferences.Editor editor = storeUserRequest.edit();
+                                editor.putString(utilityConstant.lastRetireveOver,ballDetail.getString("overs_actual") );
+                                editor.commit();
+                            }
+
 
                         }
 
@@ -223,7 +232,7 @@ public class EventService extends Service {
                     }
                     // get match score
 
-                    addScore(singleOver);
+                    addScore(singleOver,teams);
                     for (int j = 0; j < data.size(); j++) {
 
                         localdata localdata= (pojo.localdata) data.get(j);
@@ -282,6 +291,7 @@ public class EventService extends Service {
                             SharedPreferences.Editor editor = storeUserRequest.edit();
                             editor.putString(utilityConstant.lastRetireveOver,ballDetail.getString("overs_actual") );
                             editor.commit();
+                            store=true;
                         }
 
 
@@ -295,6 +305,11 @@ public class EventService extends Service {
                     {
                         //break;
                         sameUpdateCollision=false;
+                        utilityConstant.EVEN_NO_RUN_DETAIL="";
+                        utilityConstant.EVEN_FOUR_DETAIL="";
+                        utilityConstant.EVEN_SIX_DETAIL="";
+                        utilityConstant.EVEN_OUT_DETAIL="";
+
                         break;
                     }
 
@@ -345,29 +360,44 @@ public class EventService extends Service {
 //        registerReceiver(receiver, new IntentFilter("SMS_SENT"));  // SMS_SENT is a constant
     }
 
-    private void addScore(JSONObject singleOver) throws JSONException {
+    private void addScore(JSONObject singleOver,JSONArray teams) throws JSONException {
         // get match score
 //        singleOver.getString("wickets");
 //        singleOver.getString("runs");
 //        singleOver.getString("team_id");
+     //   String teamID=singleOver.getString("runs");
+        for (int i = 0; i <teams.length() ; i++) {
+            JSONObject teamObject= (JSONObject) teams.get(i);
+            if (teamObject.getString("team_id").equalsIgnoreCase(singleOver.getString("team_id"))) {
+                battingTeam=teamObject.getString("team_short_name");
+                
+            }
+            else
+            {
+                bowlingTeam=teamObject.getString("team_short_name");
+
+            }
+
+        }
+            String teamDisplay=bowlingTeam+" vs "+battingTeam+":";
         if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
         {
-            utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+teamDisplay+" "+battingTeam+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
 
         }
           if(!utilityConstant.EVEN_OUT_DETAIL.equals(""))
         {
-            utilityConstant.EVEN_OUT_DETAIL= utilityConstant.EVEN_OUT_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.EVEN_OUT_DETAIL= utilityConstant.EVEN_OUT_DETAIL+" "+teamDisplay+" "+battingTeam+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
 
         }
           if(!utilityConstant.EVEN_SIX_DETAIL.equals(""))
         {
-            utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.EVEN_SIX_DETAIL= utilityConstant.EVEN_SIX_DETAIL+" "+teamDisplay+" "+battingTeam+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
 
         }
           if(!utilityConstant.EVEN_NO_RUN_DETAIL.equals(""))
         {
-            utilityConstant.EVEN_NO_RUN_DETAIL= utilityConstant.EVEN_NO_RUN_DETAIL+" "+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
+            utilityConstant.EVEN_NO_RUN_DETAIL= utilityConstant.EVEN_NO_RUN_DETAIL+" "+teamDisplay+" "+battingTeam+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
           //  utilityConstant.showToast(this, utilityConstant.EVEN_NO_RUN_DETAIL);
         }
 
