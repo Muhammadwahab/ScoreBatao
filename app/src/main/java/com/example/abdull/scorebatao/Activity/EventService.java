@@ -379,7 +379,7 @@ public class EventService extends Service {
             }
 
         }
-            String teamDisplay=bowlingTeam+" vs "+battingTeam+":";
+            String teamDisplay=bowlingTeam+" vs "+battingTeam+": After "+singleOver.getString("over_number")+" over";
         if(!utilityConstant.EVEN_FOUR_DETAIL.equals(""))
         {
             utilityConstant.EVEN_FOUR_DETAIL= utilityConstant.EVEN_FOUR_DETAIL+" "+teamDisplay+" "+battingTeam+singleOver.getString("runs")+"/"+singleOver.getString("wickets");
@@ -485,6 +485,7 @@ public class EventService extends Service {
 
     void sendMessage(String number,String Score)
     {
+        Score+=" Powered By ScoreBatao";
         SmsManager smsManager = SmsManager.getDefault();
                 ArrayList<String> parts = smsManager.divideMessage(Score);
                 try {

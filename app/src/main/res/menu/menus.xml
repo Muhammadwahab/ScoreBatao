@@ -2,10 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/Logout"
+    <item
+        android:id="@+id/Logout"
 
-        android:title="Logout"
-        app:showAsAction="ifRoom"/>
+        android:enabled="true"
+        android:icon="@mipmap/logout"
+
+        android:title="Log out"
+        app:showAsAction="ifRoom|withText" />
 
 
 

@@ -328,6 +328,9 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             helper insert = new helper(context);
                                             ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
                                             ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
+                                            SharedPreferences preferences = context.getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
+                                            preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
+
 
                                             insert.deleteAll();
 
@@ -353,6 +356,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                             helper insert = new helper(context);
                             ((Activity) context).stopService(new Intent(getContext(), services.class));
                             ((Activity) context).stopService(new Intent(getContext(), EventService.class));
+                            SharedPreferences preferences = context.getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
+                            preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
 
                             insert.deleteAll();
                         }

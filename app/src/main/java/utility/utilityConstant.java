@@ -26,6 +26,7 @@ public class utilityConstant {
     public static long NOTIFY_INTERVAL = 10 * 1000; // 10 seconds
     public static int CHECKCOUNT = 0; // 10 seconds
     public static String ODI = "One-Day Internationals";
+    public static String FIRSTCLASS = "First-class";
     public static String STATUS = "ON";
 
     public static String OFF = "OFF";

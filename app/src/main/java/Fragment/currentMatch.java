@@ -33,11 +33,6 @@ import java.util.ArrayList;
 import Adapter.currentMatchesAdapter;
 import pojo.currentLiveMatches;
 import utility.utilityConstant;
-
-/**
- * Created by abdull on 3/23/17.
- */
-
 public class currentMatch extends Fragment {
     ListView listView;
     private ArrayList arrayList = new ArrayList();
@@ -162,7 +157,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if (localData.getBoolean("matchStarted") == true) {
+                if (!localData.getBoolean("matchStarted")) {
                     continue;
                 }
                 currentLiveMatches data = new currentLiveMatches();

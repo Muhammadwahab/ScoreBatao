@@ -94,6 +94,7 @@ public class listOfMatch extends AppCompatActivity {
         preferences.edit().remove(utilityConstant.emailRequest).commit();
         preferences.edit().remove(utilityConstant.email).commit();
         preferences.edit().remove(utilityConstant.signInMethod).commit();
+        preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
         startActivity(new Intent(listOfMatch.this, MainActivity.class));
     }
 }

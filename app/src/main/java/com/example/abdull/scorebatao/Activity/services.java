@@ -180,13 +180,17 @@ public class services extends Service {
             if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
                 matchType = "ODI ";
             }
+            else if(matchType.equalsIgnoreCase(utilityConstant.FIRSTCLASS))
+            {
+                matchType = "FC ";
+            }
             if (matchStarted) {
                 Score = jsonObject.getString("score");
             } else {
                 Score = "Match Not Start ";
             }
             String innings_requirement = jsonObject.getString("innings-requirement");
-            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + "Score " + Score + "" + innings_requirement;
+            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + " " + Score + "" + innings_requirement+" \n Powered By ScoreBatao";
             utilityConstant.showToast(this,"Total" + CombineScore);
             for (int i = 0; i < data.size(); i++) {
                 localdata localdata = (pojo.localdata) data.get(i);
@@ -198,7 +202,6 @@ public class services extends Service {
                     ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
                     for (int j = 0; j < parts.size(); j++) {
                         sentIntents.add(PendingIntent.getBroadcast(getApplicationContext(), 0, new Intent("SMS_SENT"), 0));
-
                     }
                     smsManager.sendMultipartTextMessage(localdata.getPhonenumber(), null, parts, sentIntents, null);
 
