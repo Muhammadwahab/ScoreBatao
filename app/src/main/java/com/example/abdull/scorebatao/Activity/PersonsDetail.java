@@ -167,6 +167,8 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         TextView emptysubTitle= (TextView) findViewById(R.id.empty_subtitle_text);
                                         ImageView imageView= (ImageView) findViewById(R.id.empty_shelter_image);
                                         ProgressBar progress= (ProgressBar)findViewById(R.id.progressBar);
+                                        emptyTitle.setText("NO Number Found In Cloud");
+                                        emptysubTitle.setText("Please Add User");
                                         progress.setVisibility(View.GONE);
                                         emptyTitle.setVisibility(View.VISIBLE);
                                         emptysubTitle.setVisibility(View.VISIBLE);
