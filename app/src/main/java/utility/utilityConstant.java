@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class utilityConstant {
     public static final String ON = "ON";
+    public static final int REQUEST_SELECT_CONTACT = 1;
     public static int spinnerItemPosition = 0;
     public static String MyPREFERENCES = "ScoreBatao";
     public static String requestCatche = "requestCatche";

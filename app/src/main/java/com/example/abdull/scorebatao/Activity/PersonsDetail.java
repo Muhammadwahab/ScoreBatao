@@ -1,11 +1,13 @@
 package com.example.abdull.scorebatao.Activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,6 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.abdull.scorebatao.R;
 import com.facebook.login.LoginManager;
@@ -62,6 +66,11 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
     String request;
     String Status;
     String update;
+
+     EditText nameEditText;
+     EditText phoneNumberEditText;
+
+
 
 
     @Override
@@ -373,13 +382,14 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.activity_add_persons, null);
 
-        final EditText name = (EditText) dialogView.findViewById(R.id.phoneName); //here
-        final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
+         nameEditText = (EditText) dialogView.findViewById(R.id.phoneName); //here
+         phoneNumberEditText = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
         final Button save = (Button) dialogView.findViewById(R.id.Save); //here
         final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
-        name.setText(localdata.getName());
-        PhoneNumber.setText(localdata.getPhonenumber());
-        name.setText(localdata.getName());
+        final ImageButton importNumber = (ImageButton) dialogView.findViewById(R.id.Contact); //here
+        nameEditText.setText(localdata.getName());
+        phoneNumberEditText.setText(localdata.getPhonenumber());
+        nameEditText.setText(localdata.getName());
         // Spinner element
         // final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
         // radio buttons
@@ -393,6 +403,10 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         Event.setOnCheckedChangeListener(this);
         OffRadio.setOnCheckedChangeListener(this);
 
+        // import button listner
+
+
+
         // linear layout for adding child
         linearLayout = (LinearLayout) dialogView.findViewById(R.id.insertCoverge);
         // horizontal layout for buttons
@@ -400,6 +414,15 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         builder.setView(dialogView);
         final AlertDialog dialogUpdate = builder.create();
         dialogUpdate.show();
+
+        importNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(PersonsDetail.this, "Import Button Click", Toast.LENGTH_SHORT).show();
+                selectContact();
+
+            }
+        });
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -414,11 +437,11 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 //                progress.show();
 //// To dismiss the dialog
 //              //  progress.dismiss();
-                final String phoneNumber = PhoneNumber.getText().toString().trim();
+                final String phoneNumber = phoneNumberEditText.getText().toString().trim();
                 Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
                 Matcher m = p.matcher(phoneNumber);
                 if (!m.matches()) {
-                    utilityConstant.showToast(getApplicationContext(),"Invalid PhoneNumber");
+                    utilityConstant.showToast(getApplicationContext(),"Invalid phoneNumberEditText");
 
                 } else {
                     String Request;
@@ -442,7 +465,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
-                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
                                         utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
@@ -463,7 +486,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                         });
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
-                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
                     }
                 }
             }
@@ -485,16 +508,18 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         LayoutInflater inflater = getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.activity_add_persons, null);
 
-        final EditText name = (EditText) dialogView.findViewById(R.id.phoneName); //here
-        final EditText PhoneNumber = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
+         nameEditText = (EditText) dialogView.findViewById(R.id.phoneName); //here
+         phoneNumberEditText = (EditText) dialogView.findViewById(R.id.phoneNumber); //here
         final Button save = (Button) dialogView.findViewById(R.id.Save); //here
         final Button discard = (Button) dialogView.findViewById(R.id.Discard); //here
+        final ImageButton importNumber = (ImageButton) dialogView.findViewById(R.id.Contact); //here
         // Spinner element
         // final Spinner spinner = (Spinner) dialogView.findViewById(R.id.spinner);
         // radio buttons
         RadioButton Interval = (RadioButton) dialogView.findViewById(R.id.radio_interval);
         RadioButton Event = (RadioButton) dialogView.findViewById(R.id.radio_event);
         RadioButton OffRadio = (RadioButton) dialogView.findViewById(R.id.radio_Of);
+
 
         // adding onCheck Listener in radio button
 
@@ -511,6 +536,15 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         final AlertDialog dialogUpdate = builder.create();
         dialogUpdate.show();
 
+        importNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(PersonsDetail.this, "Import Button Click", Toast.LENGTH_SHORT).show();
+                selectContact();
+
+            }
+        });
+
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -524,11 +558,11 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
 //                progress.show();
 //// To dismiss the dialog
 //              //  progress.dismiss();
-                final String phoneNumber = PhoneNumber.getText().toString().trim();
+                final String phoneNumber = phoneNumberEditText.getText().toString().trim();
                 Pattern p = Pattern.compile("^[+]?[0-9]{11,13}$");
                 Matcher m = p.matcher(phoneNumber);
                 if (!m.matches()) {
-                    utilityConstant.showToast(getApplicationContext(),"Invalid PhoneNumber");
+                    utilityConstant.showToast(getApplicationContext(),"Invalid phoneNumberEditText");
 
                 } else {
                     String Request;
@@ -552,7 +586,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
-                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
                                         utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
@@ -573,7 +607,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                         });
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
-                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(name.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
                     }
                 }
             }
@@ -700,5 +734,37 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
         preferences.edit().remove(utilityConstant.email).commit();
         preferences.edit().remove(utilityConstant.signInMethod).commit();
         startActivity(new Intent(PersonsDetail.this, MainActivity.class));
+    }
+
+    // for import contact
+
+    public void selectContact() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, utilityConstant.REQUEST_SELECT_CONTACT);
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == utilityConstant.REQUEST_SELECT_CONTACT && resultCode == RESULT_OK) {
+            Uri contactUri = data.getData();
+            String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+            Cursor cursor = getContentResolver().query(contactUri, projection,
+                    null, null, null);
+            // If the cursor returned is valid, get the phone number
+            if (cursor != null && cursor.moveToFirst()) {
+                int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                String number = cursor.getString(numberIndex).trim();
+                String name = cursor.getString(nameIndex);
+                // Do something with the phone number
+                nameEditText.setText(name);
+                phoneNumberEditText.setText(number);
+                Toast.makeText(this, ""+number+"\n"+name, Toast.LENGTH_SHORT).show();
+
+            }
+            cursor.close();
+        }
     }
 }
