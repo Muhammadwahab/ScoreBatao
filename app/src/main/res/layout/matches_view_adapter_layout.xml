@@ -22,7 +22,7 @@
             android:id="@+id/teamFlagOne"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/wahab" />
+            android:src="@drawable/noteamfound" />
 
         <TextView
             android:id="@+id/textView"
@@ -39,7 +39,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="false"
-            android:src="@drawable/wahab" />
+            android:src="@drawable/noteamfound" />
 
         <Switch
             android:id="@+id/scset"
@@ -59,9 +59,10 @@
 
         <TextView
             android:id="@+id/teamOne"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.06"
+            android:layout_weight="0"
+            android:gravity="center_horizontal"
             android:text="PAK"
             android:textColor="#360101"
             android:textSize="20dp"
@@ -69,13 +70,22 @@
 
         <TextView
             android:id="@+id/teamTwo"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.16"
+            android:layout_weight="0"
+            android:gravity="center_horizontal"
             android:text="ENG"
             android:textColor="#360101"
             android:textSize="20dp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.06"
+            android:text="TextView"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <Button

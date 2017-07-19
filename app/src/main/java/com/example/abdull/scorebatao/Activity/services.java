@@ -223,6 +223,8 @@ public class services extends Service {
         wl.release();
         stopForeground(true);
     }
+
+    // for interval timer and send Code
     class task extends TimerTask {
         ArrayList Data;
         String Request;

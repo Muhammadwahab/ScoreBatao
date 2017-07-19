@@ -1,13 +1,11 @@
 package utility;
 
 import android.content.Context;
-import android.content.Intent;
 import android.widget.Toast;
 
 import com.example.abdull.scorebatao.R;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by abdull on 5/31/17.
@@ -78,25 +76,30 @@ public class utilityConstant {
         flags.put("Nottinghamshire", R.drawable.nottinghamshire);
 
 
-
-
+        flags.put("Derbyshire", R.drawable.derbishire);
+        flags.put("Canada", R.drawable.canada);
+        flags.put("Bermuda", R.drawable.bermuda);
+        flags.put("Durham", R.drawable.durham);
+        flags.put("Singapore", R.drawable.singapoor);
+        flags.put("Malaysia", R.drawable.malaysia);
+        flags.put("Nepal", R.drawable.nepal);
+        flags.put("Glamorgan", R.drawable.glamorgan);
+        flags.put("United States of America", R.drawable.usa);
         return flags;
-
     }
-    public static int flagOfTeam(String team)
+
+    public static  int flagOfTeam(String team)
     {
-        HashMap<String,Integer> flag=storeFlag();
+        HashMap<String,Integer> flag=utilityConstant.storeFlag();
 
         for (HashMap.Entry set:flag.entrySet()) {
 
-            if(set.getKey().equals(team))
+            if(team.contains(set.getKey().toString()))
             {
                 return (int) set.getValue();
             }
-
-
         }
-        return 0;
+        return R.drawable.noteamfound;
     }
 
 

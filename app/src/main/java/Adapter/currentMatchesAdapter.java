@@ -97,8 +97,8 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
 
 
-        teamFlagOne.setImageDrawable(context.getResources().getDrawable(flagOfTeam(matches.getTeamOne())));
-        teamFlagTwo.setImageDrawable(context.getResources().getDrawable(flagOfTeam(matches.getTeamTwo())));
+        teamFlagOne.setImageDrawable(context.getResources().getDrawable(utilityConstant.flagOfTeam(matches.getTeamOne())));
+        teamFlagTwo.setImageDrawable(context.getResources().getDrawable(utilityConstant.flagOfTeam(matches.getTeamTwo())));
 
 
 //        oneVsTwo.setText(matches.getUnique_ID() + matches.getTeamOne() + "VS" + matches.getTeamTwo());
@@ -131,7 +131,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 final currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) buttonView.getTag());
-                utilityConstant.showToast(context, "onoff id ");
+              //  utilityConstant.showToast(context, "onoff id ");
                 if (isChecked) {
 
                     if (helper.showRecord().size() ==0) {
@@ -191,13 +191,13 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                                             }
 
                                                         }
-                                                        utilityConstant.showToast(context, "service check");
+                                                       // utilityConstant.showToast(context, "service check");
 
                                                         helper insert = new helper(context);
                                                         long idCheck = insert.insertData(numbers);
                                                         utilityConstant.showToast(context, "" + idCheck);
                                                         if (idCheck != -1) {
-                                                            utilityConstant.showToast(context, "Service Start");
+                                                          //  utilityConstant.showToast(context, "Service Start");
                                                             ((Activity) context).startService(new Intent(getContext(), services.class));
                                                             // event Service
                                                             ((Activity) context).startService(new Intent(getContext(), EventService.class));
@@ -224,7 +224,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                     }
                                 });
                             } else {
-                                utilityConstant.showToast(context, "service check");
+                              //  utilityConstant.showToast(context, "service check");
 
                                 String id = "matchID-" + matches.getUnique_ID();
                                 DatabaseReference databaseReference = database.getReference(Request + "/" + id);
@@ -330,20 +330,13 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
                                             SharedPreferences preferences = context.getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                                             preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
-
-
                                             insert.deleteAll();
-
-
                                             break;
                                             // break when email address find
 
                                         }
-
                                     }
-
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError error) {
                                     Log.w("Read Failed", "Failed to read value.", error.toException());
@@ -361,31 +354,27 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                             insert.deleteAll();
                         }
-
-
                     }
                     else
                     {
                         multipleMatchesCheck=false;
                     }
 
-
                 }
             }
         });
         return convertView;
     }
-
     @Override
     public void onClick(View v) {
         Button button = (Button) v;
 
         if (button.getId() == setCoverage.getId()) {
             currentLiveMatches matches = (currentLiveMatches) liveMatches.get((Integer) v.getTag());
-            utilityConstant.showToast(context, "Match id");
+           // utilityConstant.showToast(context, "Match id");
 
             Intent intent = ((Activity) context).getIntent();
-            utilityConstant.showToast(context, "set Coverage");
+           // utilityConstant.showToast(context, "set Coverage");
 
             Intent addPerson = new Intent(getContext(), PersonsDetail.class);
             addPerson.putExtra("Email", intent.getStringExtra("Email"));
@@ -395,17 +384,5 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
     }
 
-    public  int flagOfTeam(String team)
-    {
-        HashMap<String,Integer> flag=utilityConstant.storeFlag();
 
-        for (HashMap.Entry set:flag.entrySet()) {
-
-            if(team.contains(set.getKey().toString()))
-            {
-                return (int) set.getValue();
-            }
-        }
-        return R.drawable.wahab;
-    }
 }

@@ -82,6 +82,7 @@ public class currentMatch extends Fragment {
                             TextView emptyLoading= (TextView) view.findViewById(R.id.empty_loading);
                             TextView emptyTitle= (TextView) view.findViewById(R.id.empty_title_text);
                             TextView emptysubTitle= (TextView) view.findViewById(R.id.empty_subtitle_text);
+                            emptysubTitle.setText("Please Come Back When Match Is Live...");
                             ImageView imageView= (ImageView) view.findViewById(R.id.empty_shelter_image);
                             ProgressBar progress= (ProgressBar) view.findViewById(R.id.progressBar);
                             progress.setVisibility(View.GONE);
@@ -157,7 +158,7 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if (!localData.getBoolean("matchStarted")) {
+                if (localData.getBoolean("matchStarted")) {
                     continue;
                 }
                 currentLiveMatches data = new currentLiveMatches();

@@ -1,10 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:background="#c865ffce"
-android:padding="10dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/com_facebook_button_send_background_color_pressed"
+    android:orientation="vertical"
+    android:padding="10dp">
 
 
     <RelativeLayout
@@ -68,21 +68,21 @@ android:padding="10dp">
     </RelativeLayout>
 
     <RelativeLayout
-android:layout_width="match_parent"
-android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-<TextView
-android:id="@+id/status"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="ON"
-android:layout_alignParentTop="true"
-android:layout_alignParentEnd="true" />
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:text="ON" />
 
-<TextView
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="Status" />
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status" />
+    </RelativeLayout>
 
 </LinearLayout>
