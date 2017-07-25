@@ -28,7 +28,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 import Adapter.currentMatchesAdapter;
 import pojo.currentLiveMatches;
@@ -70,7 +73,7 @@ public class currentMatch extends Fragment {
 
     void gettingMatches() {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        String url = "http://cricapi.com/api/matches?apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
+        String url = "http://cricapi.com/api/matches?apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3&&v=2";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -149,6 +152,7 @@ public class currentMatch extends Fragment {
     }
 
     public ArrayList getData(String response) {
+        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy:MM:dd");
         arrayList = new ArrayList();
         JSONTokener jsonTokener = new JSONTokener(response);
         try {
@@ -158,12 +162,57 @@ public class currentMatch extends Fragment {
 
             for (int i = 0; i < arrayOfMatches.length(); i++) {
                 JSONObject localData = (JSONObject) arrayOfMatches.get(i);
-                if (!localData.getBoolean("matchStarted")) {
+                if (localData.has("matchStarted")) {
+
+                    if (!localData.getBoolean("matchStarted")) {
+                        continue;
+                    }
+
+                    StringBuilder dateGMTApi=new StringBuilder(localData.getString("dateTimeGMT"));
+
+
+                    dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+                     // if ki condition me test match or first class ka kam karna he
+
+                    if (localData.has("type"))
+                    {
+                        // check for test matches
+                        if (localData.getString("type").equalsIgnoreCase("test") || localData.getString("type").equalsIgnoreCase("YouthTest"))
+                        {
+
+                            currentLiveMatches data = new currentLiveMatches();
+                            data.setUnique_ID(localData.getLong("unique_id"));
+                            data.setDate(localData.getString("dateTimeGMT"));
+                            data.setTeamOne(localData.getString("team-1"));
+                            data.setTeamTwo(localData.getString("team-2"));
+                            data.setMatchStart(localData.getBoolean("matchStarted"));
+                            arrayList.add(data);
+                            continue;
+
+
+                        }
+                        // compare current date with api date
+                        else  if(!dateGMTApi.substring(0,10).equalsIgnoreCase(dateFormatGmt.format(new Date()).trim().toString()))
+                        {
+                            continue;
+                        }
+
+                    }
+
+
+
+
+
+                }
+                else
+                {
                     continue;
                 }
+
                 currentLiveMatches data = new currentLiveMatches();
                 data.setUnique_ID(localData.getLong("unique_id"));
-                data.setDate(localData.getString("date"));
+                data.setDate(localData.getString("dateTimeGMT"));
                 data.setTeamOne(localData.getString("team-1"));
                 data.setTeamTwo(localData.getString("team-2"));
                 data.setMatchStart(localData.getBoolean("matchStarted"));
