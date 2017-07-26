@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import pojo.currentLiveMatches;
 import pojo.localdata;
@@ -42,6 +45,7 @@ public class SmsManager extends BroadcastReceiver {
     private String messageBody;
     private ArrayList arrayList;
     Context context;
+    String matches="Hello from Score Batao Please Type scorebatao-matchID to get Score";
     public SmsManager() {
     }
 
@@ -82,6 +86,24 @@ public class SmsManager extends BroadcastReceiver {
                 if (sharedPreferences.getLong("expireMatchesTime",-1)>System.currentTimeMillis())
                 {
                     ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
+
+                    if (currentMatches.size()==0) {
+                        matches="Hello From Score Batao Sorry No Match Live At the Moment";
+                        sendMessage();
+
+                    }
+                    else
+                    {
+                        for (int i = 0; i <currentMatches.size() ; i++) {
+
+                            currentLiveMatches matche= (currentLiveMatches) currentMatches.get(i);
+                            matches+=matche.getUnique_ID()+" "+matche.getTeamOne()+"VS "+matche.getTeamTwo()+"\n";
+                            sendMessage();
+
+                        }
+
+
+                    }
                     Toast.makeText(context, "Hello from Score Batao Please Select Match to get Score", Toast.LENGTH_SHORT).show();
                 }
                 else
@@ -95,7 +117,43 @@ public class SmsManager extends BroadcastReceiver {
             else if(messageBody.trim().contains("scorebatao-"))
             {
                 StringBuilder builder=new StringBuilder(messageBody.trim());
-                Toast.makeText(context, "index of "+  builder.substring(builder.indexOf("-")+1), Toast.LENGTH_SHORT).show();
+
+                String extractID=builder.substring(builder.indexOf("-")+1);
+
+                Pattern p = Pattern.compile("[0-9]+");
+                Matcher m = p.matcher(extractID);
+
+                if (!m.matches())
+                {
+                    Toast.makeText(context, "Invalid Id ", Toast.LENGTH_SHORT).show();
+                    matches="Pleas Type Correct Id";
+                    sendMessage();
+                }
+                else
+                {
+                    ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
+                    boolean checkID=false;
+                    for (int i = 0; i <currentMatches.size() ; i++) {
+                        currentLiveMatches matches = (currentLiveMatches) currentMatches.get(i);
+                        if (matches.getUnique_ID()==Long.parseLong(extractID))
+                        {
+                            // send score
+                            checkID=true;
+                            Toast.makeText(context, "ID Found Score is ", Toast.LENGTH_SHORT).show();
+                            gettingScore(extractID);
+                            break;
+                        }
+
+                    }
+                    if (!checkID)
+                    {
+                        matches="No Id Found for this Match ";
+                        sendMessage();
+                        //no id found send message
+                    }
+                }
+
+                Toast.makeText(context, "index of "+ extractID , Toast.LENGTH_SHORT).show();
              //   builder.substring(builder.indexOf("-")+1,builder.length());
 
             }
@@ -140,10 +198,72 @@ public class SmsManager extends BroadcastReceiver {
         });
         queue.add(stringRequest);
     }
+    void gettingScore(final String MatchID) {
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "http://cricapi.com/api/cricketScore?unique_id=" + MatchID + "&&apikey=X13XvjoxgCbgGdtoqsWuYr0FeTC3";
+
+// Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        getScore(response);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        stringRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+// Add the request to the RequestQueue.
+        queue.add(stringRequest);
+    }
+    public void getScore(String response) {
+        JSONTokener jsonTokener = new JSONTokener(response);
+        String Score = "";
+        try {
+            JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
+            if (jsonObject.has("stat"))
+            {
+                Score += jsonObject.getString("stat")+"\n";
+            }
+            if (jsonObject.has("score"))
+            {
+                Score += jsonObject.getString("score")+"\n powered by Score Batao";
+            }
+            matches=Score;
+            sendMessage();
+
+
+        }
+        catch (Exception e)
+        {
+            Toast.makeText(context, ""+e, Toast.LENGTH_SHORT).show();
+
+        }
+    }
 
     public ArrayList getData(String response) {
-        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy:MM:dd");
-        String matches="Hello from Score Batao Please Type scorebatao-matchID to get Score";
+        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd");
+
         arrayList = new ArrayList();
         JSONTokener jsonTokener = new JSONTokener(response);
         try {
@@ -160,13 +280,36 @@ public class SmsManager extends BroadcastReceiver {
                     }
 
                     StringBuilder dateGMTApi=new StringBuilder(localData.getString("dateTimeGMT"));
-
-
                     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    String GmtDate=dateFormatGmt.format(new Date()).trim().toString();
+                    String apigmtDate=dateGMTApi.substring(0,10);
 
-                    if(!dateGMTApi.substring(0,10).equalsIgnoreCase(dateFormatGmt.format(new Date()).trim().toString()))
+                    // if ki condition me test match or first class ka kam karna he
+
+                    if (localData.has("type"))
                     {
-                        continue;
+                        // check for test matches
+                        if (localData.getString("type").equalsIgnoreCase("test") || localData.getString("type").equalsIgnoreCase("YouthTest"))
+                        {
+                            matches+=localData.getLong("unique_id")+" "+localData.getString("team-1")+"VS "+localData.getString("team-2")+"\n";
+                            currentLiveMatches data = new currentLiveMatches();
+                            data.setUnique_ID(localData.getLong("unique_id"));
+                            data.setDate(localData.getString("dateTimeGMT"));
+                            data.setTeamOne(localData.getString("team-1"));
+                            data.setTeamTwo(localData.getString("team-2"));
+                            data.setMatchStart(localData.getBoolean("matchStarted"));
+                            arrayList.add(data);
+                            continue;
+
+
+                        }
+                        // compare current date with api date
+                        else  if(!(apigmtDate.equalsIgnoreCase(GmtDate)))
+                        {
+                            Toast.makeText(context, "Gmp time is "+dateFormatGmt.format(new Date()).trim().toString(), Toast.LENGTH_SHORT).show();
+                            continue;
+                        }
+
                     }
 
                 }
@@ -175,8 +318,7 @@ public class SmsManager extends BroadcastReceiver {
                     continue;
                 }
 
-
-                 matches+=localData.getLong("unique_id")+" "+localData.getString("team-1")+"VS "+localData.getString("team-2")+"\n";
+                matches+=localData.getLong("unique_id")+" "+localData.getString("team-1")+"VS "+localData.getString("team-2")+"\n";
                 currentLiveMatches data = new currentLiveMatches();
                 data.setUnique_ID(localData.getLong("unique_id"));
                 data.setDate(localData.getString("dateTimeGMT"));
@@ -194,7 +336,6 @@ public class SmsManager extends BroadcastReceiver {
                 editor.putLong("expireMatchesTime",System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(30));
                 editor.commit();
                 setStringArrayPref(context,"livematchesArray",arrayList);
-
             }
             else
             {
@@ -207,21 +348,7 @@ public class SmsManager extends BroadcastReceiver {
             }
 
 
-            android.telephony.SmsManager smsManager = android.telephony.SmsManager.getDefault();
-                ArrayList<String> parts = smsManager.divideMessage(matches);
-                try {
-                   // PendingIntent pendingIntent = PendingIntent.getBroadcast(context(), 0, new Intent("SMS_SENT"), 0);
-                    ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
-                    ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
-                    for (int j = 0; j < parts.size(); j++) {
-                        sentIntents.add(PendingIntent.getBroadcast(context, 0, new Intent("SMS_SENT"), 0));
-                    }
-                    smsManager.sendMultipartTextMessage(PhoneNumber, null, parts, sentIntents, null);
-
-                } catch (Exception e) {
-                    Toast.makeText(context, "Exception is "+e, Toast.LENGTH_SHORT).show();
-                }
-
+         sendMessage();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -246,5 +373,23 @@ public class SmsManager extends BroadcastReceiver {
 
         return currentLiveMatches;
         }
+    public void sendMessage()
+    {
+
+        android.telephony.SmsManager smsManager = android.telephony.SmsManager.getDefault();
+        ArrayList<String> parts = smsManager.divideMessage(matches);
+        try {
+            // PendingIntent pendingIntent = PendingIntent.getBroadcast(context(), 0, new Intent("SMS_SENT"), 0);
+            ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
+            ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
+            for (int j = 0; j < parts.size(); j++) {
+                sentIntents.add(PendingIntent.getBroadcast(context, 0, new Intent("SMS_SENT"), 0));
+            }
+            smsManager.sendMultipartTextMessage(PhoneNumber, null, parts, sentIntents, null);
+
+        } catch (Exception e) {
+            Toast.makeText(context, "Exception is "+e, Toast.LENGTH_SHORT).show();
+        }
+    }
 
     }

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -152,7 +153,7 @@ public class currentMatch extends Fragment {
     }
 
     public ArrayList getData(String response) {
-        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy:MM:dd");
+        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd");
         arrayList = new ArrayList();
         JSONTokener jsonTokener = new JSONTokener(response);
         try {
@@ -169,9 +170,9 @@ public class currentMatch extends Fragment {
                     }
 
                     StringBuilder dateGMTApi=new StringBuilder(localData.getString("dateTimeGMT"));
-
-
                     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    String GmtDate=dateFormatGmt.format(new Date()).trim().toString();
+                    String apigmtDate=dateGMTApi.substring(0,10);
 
                      // if ki condition me test match or first class ka kam karna he
 
@@ -193,16 +194,13 @@ public class currentMatch extends Fragment {
 
                         }
                         // compare current date with api date
-                        else  if(!dateGMTApi.substring(0,10).equalsIgnoreCase(dateFormatGmt.format(new Date()).trim().toString()))
+                        else  if(!(apigmtDate.equalsIgnoreCase(GmtDate)))
                         {
+                            Toast.makeText(getContext(), "Gmp time is "+dateFormatGmt.format(new Date()).trim().toString(), Toast.LENGTH_SHORT).show();
                             continue;
                         }
 
                     }
-
-
-
-
 
                 }
                 else

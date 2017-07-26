@@ -173,24 +173,17 @@ public class services extends Service {
         String Score = "";
         try {
             JSONObject jsonObject = (JSONObject) jsonTokener.nextValue();
-            String Team_1 = jsonObject.getString("team-1");
-            String Team_2 = jsonObject.getString("team-2");
-            String matchType = jsonObject.getString("type");
-            boolean matchStarted = jsonObject.getBoolean("matchStarted");
-            if (matchType.equalsIgnoreCase(utilityConstant.ODI)) {
-                matchType = "ODI ";
-            }
-            else if(matchType.equalsIgnoreCase(utilityConstant.FIRSTCLASS))
+            if (jsonObject.has("stat"))
             {
-                matchType = "FC ";
+                Score += jsonObject.getString("stat")+"\n";
             }
-            if (matchStarted) {
-                Score = jsonObject.getString("score");
-            } else {
-                Score = "Match Not Start ";
+            if (jsonObject.has("score"))
+            {
+                Score += jsonObject.getString("score")+"\n powered by Score Batao";
             }
+            CombineScore=Score;
             String innings_requirement = jsonObject.getString("innings-requirement");
-            CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + " " + Score + "" + innings_requirement+" \n Powered By ScoreBatao";
+         //   CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + " " + Score + "" + innings_requirement+" \n Powered By ScoreBatao";
             utilityConstant.showToast(this,"Total" + CombineScore);
             for (int i = 0; i < data.size(); i++) {
                 localdata localdata = (pojo.localdata) data.get(i);
