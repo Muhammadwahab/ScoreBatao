@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -79,77 +81,95 @@ public class SmsManager extends BroadcastReceiver {
             {
                 SharedPreferences sharedPreferences=context.getSharedPreferences(utilityConstant.MyPREFERENCES,Context.MODE_PRIVATE);
 
-                if (sharedPreferences.getLong("expireMatchesTime",-1)>System.currentTimeMillis())
+                if (checkConnectivity())
                 {
-                    ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
-
-                    if (currentMatches.size()==0) {
-                        matches="Hello From Score Batao Sorry No Match Live At the Moment";
-                        sendMessage();
-
-                    }
-                    else
+                    // agar net chal raha ho ga to
+                    if (sharedPreferences.getLong("expireMatchesTime",-1)>System.currentTimeMillis())
                     {
-                        for (int i = 0; i <currentMatches.size() ; i++) {
+                        ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
 
-                            currentLiveMatches matche= (currentLiveMatches) currentMatches.get(i);
-                            matches+=matche.getUnique_ID()+" "+matche.getTeamOne()+"VS "+matche.getTeamTwo()+"\n";
+                        if (currentMatches.size()==0) {
+                            matches="Hello From Score Batao Sorry No Match Live At the Moment";
+                            sendMessage();
+
+                        }
+                        else
+                        {
+                            for (int i = 0; i <currentMatches.size() ; i++) {
+
+                                currentLiveMatches matche= (currentLiveMatches) currentMatches.get(i);
+                                matches+=matche.getUnique_ID()+" "+matche.getTeamOne()+"VS "+matche.getTeamTwo()+"\n";
+
+
+                            }
+                            sendMessage();
 
 
                         }
-                        sendMessage();
-
-
                     }
+                    else
+                    {
+                        gettingMatches();
+                    }
+
                 }
                 else
                 {
-                    gettingMatches();
+                    matches="No Network Avaibale at Score Batao User in this Moment ";
+                    sendMessage();
                 }
-
 
             }
             else if(messageBody.trim().contains("scorebatao-"))
             {
-                StringBuilder builder=new StringBuilder(messageBody.trim());
+                if (checkConnectivity()) {
+                    // agar net chal raha ho ga to
+                    StringBuilder builder=new StringBuilder(messageBody.trim());
 
-                String extractID=builder.substring(builder.indexOf("-")+1);
+                    String extractID=builder.substring(builder.indexOf("-")+1);
 
-                Pattern p = Pattern.compile("[0-9]+");
-                Matcher m = p.matcher(extractID);
+                    Pattern p = Pattern.compile("[0-9]+");
+                    Matcher m = p.matcher(extractID);
 
-                if (!m.matches())
-                {
-                    Toast.makeText(context, "Invalid Id ", Toast.LENGTH_SHORT).show();
-                    matches="Pleas Type Correct Id";
-                    sendMessage();
+                    if (!m.matches())
+                    {
+                        Toast.makeText(context, "Invalid Id ", Toast.LENGTH_SHORT).show();
+                        matches="Pleas Type Correct Id";
+                        sendMessage();
+                    }
+                    else
+                    {
+                        ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
+                        boolean checkID=false;
+                        for (int i = 0; i <currentMatches.size() ; i++) {
+                            currentLiveMatches matches = (currentLiveMatches) currentMatches.get(i);
+                            if (matches.getUnique_ID()==Long.parseLong(extractID))
+                            {
+                                // send score
+                                checkID=true;
+                                Toast.makeText(context, "ID Found Score is ", Toast.LENGTH_SHORT).show();
+                                gettingScore(extractID);
+                                break;
+                            }
+
+                        }
+                        if (!checkID)
+                        {
+                            matches="No Id Found for this Match ";
+                            sendMessage();
+                            //no id found send message
+                        }
+                    }
+
+                    Toast.makeText(context, "index of "+ extractID , Toast.LENGTH_SHORT).show();
+                    //   builder.substring(builder.indexOf("-")+1,builder.length());
+
                 }
                 else
                 {
-                    ArrayList currentMatches=getStringArrayPref(context,"livematchesArray");
-                    boolean checkID=false;
-                    for (int i = 0; i <currentMatches.size() ; i++) {
-                        currentLiveMatches matches = (currentLiveMatches) currentMatches.get(i);
-                        if (matches.getUnique_ID()==Long.parseLong(extractID))
-                        {
-                            // send score
-                            checkID=true;
-                            Toast.makeText(context, "ID Found Score is ", Toast.LENGTH_SHORT).show();
-                            gettingScore(extractID);
-                            break;
-                        }
-
-                    }
-                    if (!checkID)
-                    {
-                        matches="No Id Found for this Match ";
-                        sendMessage();
-                        //no id found send message
-                    }
+                    matches="No Network Avaibale at Score Batao User in this Moment ";
+                    sendMessage();
                 }
-
-                Toast.makeText(context, "index of "+ extractID , Toast.LENGTH_SHORT).show();
-             //   builder.substring(builder.indexOf("-")+1,builder.length());
 
             }
 //            else {
@@ -388,6 +408,17 @@ public class SmsManager extends BroadcastReceiver {
         } catch (Exception e) {
             Toast.makeText(context, "Exception is "+e, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    boolean checkConnectivity()
+    {
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        return activeNetwork != null &&
+                activeNetwork.isConnected();
     }
 
     }
