@@ -470,6 +470,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
                                         editor.commit();
+                                        dialogUpdate.dismiss();
                                         break;
 
                                     }
@@ -487,6 +488,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
                         setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        dialogUpdate.dismiss();
                     }
                 }
             }
@@ -591,6 +593,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
                                         editor.commit();
+                                        dialogUpdate.dismiss();
                                         break;
 
                                     }
@@ -608,6 +611,7 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
                         setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        dialogUpdate.dismiss();
                     }
                 }
             }

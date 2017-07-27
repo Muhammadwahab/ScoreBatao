@@ -29,7 +29,6 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,8 +44,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -218,6 +215,10 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
                     //check verification
                     if (!user.isEmailVerified()) {
                         utilityConstant.showToast(getApplicationContext(), "Please Verify Email");
+                        if (progress!=null)
+                        {
+                            progress.dismiss();
+                        }
                     } else {
                         // move to mathes screen
                         Intent ListOFScreen = new Intent(StartScreen.this, listOfMatch.class);
@@ -284,12 +285,17 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
                                 } catch (FirebaseAuthInvalidUserException e) {
                                     progress.dismiss();
-                                    utilityConstant.showToast(getApplicationContext(), "" + e);
+                                    utilityConstant.showToast(getApplicationContext(), "" + e.getMessage());
                                 } catch (FirebaseAuthInvalidCredentialsException e) {
                                     progress.dismiss();
-                                    utilityConstant.showToast(getApplicationContext(), "" + e);
+                                    utilityConstant.showToast(getApplicationContext(), "" + e.getMessage());
                                 } catch (Exception e) {
-                                    utilityConstant.showToast(getApplicationContext(),e+"");
+                                    if (e.getMessage()!=null)
+                                    {
+                                        utilityConstant.showToast(getApplicationContext(),e.getMessage()+"");
+                                    }
+
+                                    progress.dismiss();
 
                                 }
 
@@ -396,10 +402,10 @@ public class StartScreen extends AppCompatActivity implements View.OnClickListen
 
                                         } catch (FirebaseAuthInvalidUserException e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "no email in database found " + e.getErrorCode());
+                                            utilityConstant.showToast(getApplicationContext(), "no email in found in database " + e.getMessage());
                                         } catch (FirebaseAuthInvalidCredentialsException e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getErrorCode());
+                                            utilityConstant.showToast(getApplicationContext(), "Incorrect Credential " + e.getMessage());
 
                                         } catch (Exception e) {
                                             progress.dismiss();

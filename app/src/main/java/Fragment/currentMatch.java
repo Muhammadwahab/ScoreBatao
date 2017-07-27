@@ -8,12 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -48,7 +46,7 @@ public class currentMatch extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.container = container;
-        utilityConstant.showToast(getContext(),"Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"));
+     //   utilityConstant.showToast(getContext(),"Email in Fragment " + getArguments().getString("Email", "Email Not Found In Frament"));
         view = LayoutInflater.from(getContext()).inflate(R.layout.current_match, container, false);
         listView = (ListView) view.findViewById(R.id.curretListView);
         View emptyView = view.findViewById(R.id.empty_view);
@@ -196,7 +194,7 @@ public class currentMatch extends Fragment {
                         // compare current date with api date
                         else  if(!(apigmtDate.equalsIgnoreCase(GmtDate)))
                         {
-                            Toast.makeText(getContext(), "Gmp time is "+dateFormatGmt.format(new Date()).trim().toString(), Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(getContext(), "Gmp time is "+dateFormatGmt.format(new Date()).trim().toString(), Toast.LENGTH_SHORT).show();
                             continue;
                         }
 

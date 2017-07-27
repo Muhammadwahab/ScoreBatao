@@ -1,12 +1,14 @@
 package com.example.abdull.scorebatao.Activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.example.abdull.scorebatao.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -86,19 +88,19 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                                             throw task.getException();
                                         } catch (FirebaseAuthWeakPasswordException e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "week");
+                                            utilityConstant.showToast(getApplicationContext(), "Password must have at least six Count");
 
                                         } catch (FirebaseAuthInvalidCredentialsException e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "invalid" + e);
+                                            utilityConstant.showToast(getApplicationContext(), "invalid Email" + e.getMessage());
 
                                         } catch (FirebaseAuthUserCollisionException e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "usercollison" + e);
+                                            utilityConstant.showToast(getApplicationContext(), "usercollison" + e.getMessage());
 
                                         } catch (Exception e) {
                                             progress.dismiss();
-                                            utilityConstant.showToast(getApplicationContext(), "extra " + e);
+                                            utilityConstant.showToast(getApplicationContext(), "extra " + e.getMessage());
 
                                         }
                                     } else {       // get current user
@@ -118,7 +120,9 @@ public class signupAccount extends AppCompatActivity implements View.OnClickList
                                                     user userData = new user(emailOfFB, "ID-3333");
                                                     myRef.child(userId).setValue(userData);
                                                     progress.dismiss();
-                                                    utilityConstant.showToast(getApplicationContext(), "email send to recipeient ");
+                                                    utilityConstant.showToast(getApplicationContext(), "Verification email send to recipient's Email Address");
+                                                    startActivity(new Intent(signupAccount.this,MainActivity.class));
+                                                    finish();
                                                 }
                                             }
                                         });

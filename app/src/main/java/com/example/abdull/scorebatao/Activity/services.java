@@ -88,7 +88,7 @@ public class services extends Service {
         pm = (PowerManager) getSystemService(getApplicationContext().POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag");
         wl.acquire();
-        utilityConstant.showToast(this,"On Create Wake Initialze");
+       // utilityConstant.showToast(this,"On Create Wake Initialze");
         helper = new helper(getApplicationContext());
         timerCount = helper.getTimerCounts();
         timerArray = new Timer[timerCount.size()];
@@ -115,7 +115,7 @@ public class services extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        utilityConstant.showToast(this,"on Start Command");
+      //  utilityConstant.showToast(this,"on Start Command");
         // for forground service notification
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -182,7 +182,7 @@ public class services extends Service {
                 Score += jsonObject.getString("score")+"\n powered by Score Batao";
             }
             CombineScore=Score;
-            String innings_requirement = jsonObject.getString("innings-requirement");
+          //  String innings_requirement = jsonObject.getString("innings-requirement");
          //   CombineScore = matchType + "" + Team_1 + "VS" + Team_2 + " " + Score + "" + innings_requirement+" \n Powered By ScoreBatao";
             utilityConstant.showToast(this,"Total" + CombineScore);
             for (int i = 0; i < data.size(); i++) {
@@ -211,7 +211,7 @@ public class services extends Service {
     public void onDestroy() {
         for (int i = 0; i < timerArray.length; i++) {
             timerArray[i].cancel();
-            utilityConstant.showToast(this,"Service Destroy timer number " + i);
+           // utilityConstant.showToast(this,"Service Destroy timer number " + i);
         }
         wl.release();
         stopForeground(true);
@@ -232,7 +232,7 @@ public class services extends Service {
             hand.post(new Runnable() {
                 @Override
                 public void run() {
-                    utilityConstant.showToast(services.this,"Timer for Request "+Request);
+                   // utilityConstant.showToast(services.this,"Timer for Request "+Request);
                     localdata localdata = (localdata) Data.get(0);
                     gettingScore(localdata.getMatchID(), Data);
                 }

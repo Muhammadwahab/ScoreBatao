@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.example.abdull.scorebatao.R;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 import pojo.localdata;
 

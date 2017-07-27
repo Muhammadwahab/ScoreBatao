@@ -79,7 +79,7 @@ public class helper extends SQLiteOpenHelper {
             contentValues.put(NAME, localdata.getName());
             id = database.insert(table, null, contentValues);
         }
-        utilityConstant.showToast(context, "primary id " + id);
+    //    utilityConstant.showToast(context, "primary id " + id);
         database.close();
         return id;
     }

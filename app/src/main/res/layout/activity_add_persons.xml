@@ -37,11 +37,13 @@
             android:layout_height="wrap_content"
             android:text="Set Interval"
             />
-        <RadioButton android:id="@+id/radio_event"
+
+        <RadioButton
+            android:id="@+id/radio_event"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set Event"
-            />
+            android:visibility="gone" />
         <RadioButton android:id="@+id/radio_Of"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

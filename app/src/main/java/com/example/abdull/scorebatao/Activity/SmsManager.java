@@ -4,10 +4,8 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,14 +35,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pojo.currentLiveMatches;
-import pojo.localdata;
 import utility.utilityConstant;
 public class SmsManager extends BroadcastReceiver {
     private String TAG = SmsManager.class.getSimpleName();
     private String messageBody;
     private ArrayList arrayList;
     Context context;
-    String matches="Hello from Score Batao Please Type scorebatao-matchID to get Score";
+    String matches="Hello from Score Batao Please Type scorebatao-matchID in small letters to get Score \n";
     public SmsManager() {
     }
 
@@ -98,17 +94,16 @@ public class SmsManager extends BroadcastReceiver {
 
                             currentLiveMatches matche= (currentLiveMatches) currentMatches.get(i);
                             matches+=matche.getUnique_ID()+" "+matche.getTeamOne()+"VS "+matche.getTeamTwo()+"\n";
-                            sendMessage();
+
 
                         }
+                        sendMessage();
 
 
                     }
-                    Toast.makeText(context, "Hello from Score Batao Please Select Match to get Score", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    Toast.makeText(context, "Hello from Score Batao Please Select Match to get Score", Toast.LENGTH_SHORT).show();
                     gettingMatches();
                 }
 
@@ -157,6 +152,10 @@ public class SmsManager extends BroadcastReceiver {
              //   builder.substring(builder.indexOf("-")+1,builder.length());
 
             }
+//            else {
+//                matches="Sorry You Type Unknown Cheat \n Please 1 Type ScoreBatao For List of Matches \n 2 Type scorebatao-matchid for score \n Powered By ScoreBatao";
+//                sendMessage();
+//            }
 
 
             // Display the entire SMS Message
@@ -300,7 +299,6 @@ public class SmsManager extends BroadcastReceiver {
                             data.setMatchStart(localData.getBoolean("matchStarted"));
                             arrayList.add(data);
                             continue;
-
 
                         }
                         // compare current date with api date

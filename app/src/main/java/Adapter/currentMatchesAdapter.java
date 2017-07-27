@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.abdull.scorebatao.Activity.EventService;
 import com.example.abdull.scorebatao.Activity.PersonsDetail;
 import com.example.abdull.scorebatao.Activity.services;
 import com.example.abdull.scorebatao.R;
@@ -195,12 +194,12 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
 
                                                         helper insert = new helper(context);
                                                         long idCheck = insert.insertData(numbers);
-                                                        utilityConstant.showToast(context, "" + idCheck);
+                                                     //   utilityConstant.showToast(context, "" + idCheck);
                                                         if (idCheck != -1) {
                                                           //  utilityConstant.showToast(context, "Service Start");
                                                             ((Activity) context).startService(new Intent(getContext(), services.class));
                                                             // event Service
-                                                            ((Activity) context).startService(new Intent(getContext(), EventService.class));
+                                                          //  ((Activity) context).startService(new Intent(getContext(), EventService.class));
 
 
                                                         } else {
@@ -255,13 +254,13 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                         }
                                         helper insert = new helper(context);
                                         long idCheck = insert.insertData(numbers);
-                                        utilityConstant.showToast(context, "" + idCheck);
+                                      //  utilityConstant.showToast(context, "" + idCheck);
 
                                         if (idCheck != -1) {
-                                            utilityConstant.showToast(context, "Service Start");
+                                          //  utilityConstant.showToast(context, "Service Start");
 
                                             ((Activity) context).startService(new Intent(getContext(), services.class));
-                                            ((Activity) context).startService(new Intent(getContext(), EventService.class));
+                                          //  ((Activity) context).startService(new Intent(getContext(), EventService.class));
 
 
                                         } else {
@@ -292,7 +291,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                     if (!multipleMatchesCheck) {
                         checkOnOf = false;
                         utilityConstant.CHECKCOUNT = 0;
-                        utilityConstant.showToast(context, "Disable");
+                        utilityConstant.showToast(context, "Match Coverage Off");
                         String Request;
                         if ((Request = storeUserRequest.getString(utilityConstant.requestCatche, "null")).equalsIgnoreCase("null")) {
                             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -327,7 +326,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                                             getMatchID.child("userstatus").setValue("OFF");
                                             helper insert = new helper(context);
                                             ((Activity) context).stopService(new Intent(getContext(), services.class).putExtra("SERVICE", "STOP"));
-                                            ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
+                                           // ((Activity) context).stopService(new Intent(getContext(), EventService.class).putExtra("SERVICE", "STOP"));
                                             SharedPreferences preferences = context.getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                                             preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
                                             insert.deleteAll();
@@ -348,7 +347,7 @@ public class currentMatchesAdapter extends ArrayAdapter implements View.OnClickL
                             databaseReference.child("userstatus").setValue("OFF");
                             helper insert = new helper(context);
                             ((Activity) context).stopService(new Intent(getContext(), services.class));
-                            ((Activity) context).stopService(new Intent(getContext(), EventService.class));
+                         //   ((Activity) context).stopService(new Intent(getContext(), EventService.class));
                             SharedPreferences preferences = context.getSharedPreferences(utilityConstant.MyPREFERENCES, 0);
                             preferences.edit().remove(utilityConstant.lastRetireveOver).commit();
 
