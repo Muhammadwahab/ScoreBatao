@@ -465,7 +465,17 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
-                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        String[] splitArray=new String[2];
+                                        if ( getSpinner() != null)
+                                        {
+                                            String interval= (String) getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition);
+                                            splitArray=interval.split(" ");
+                                        }
+                                        else
+                                        {
+                                            splitArray[0]="request off";
+                                        }
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, splitArray[0]));
                                         utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
@@ -487,7 +497,17 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                         });
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
-                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        String[] splitArray=new String[2];
+                        if ( getSpinner() != null)
+                        {
+                            String interval= (String) getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition);
+                            splitArray=interval.split(" ");
+                        }
+                        else
+                        {
+                            splitArray[0]="request off";
+                        }
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, splitArray[0]));
                         dialogUpdate.dismiss();
                     }
                 }
@@ -588,7 +608,17 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                                         StringBuilder stringBuilder = new StringBuilder(reference);
                                         String refvalue = stringBuilder.replace(0, 40, "").toString();
                                         DatabaseReference setMatchID = database.getReference(refvalue);
-                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "requestOFF"));
+                                        String[] splitArray=new String[2];
+                                        if ( getSpinner() != null)
+                                        {
+                                            String interval= (String) getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition);
+                                            splitArray=interval.split(" ");
+                                        }
+                                        else
+                                        {
+                                            splitArray[0]="request off";
+                                        }
+                                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, splitArray[0]));
                                         utilityConstant.showToast(getApplicationContext(),"Referecne is " + databaseReference.toString());
                                         SharedPreferences.Editor editor = storeUserRequest.edit();
                                         editor.putString(utilityConstant.requestCatche, refvalue);
@@ -610,7 +640,17 @@ public class PersonsDetail extends AppCompatActivity implements AdapterView.OnIt
                         });
                     } else {
                         DatabaseReference setMatchID = database.getReference(Request);
-                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS, getSpinner() != null ? getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition) + "" : "request off"));
+                        String[] splitArray=new String[2];
+                        if ( getSpinner() != null)
+                        {
+                            String interval= (String) getSpinner().getItemAtPosition(utilityConstant.spinnerItemPosition);
+                             splitArray=interval.split(" ");
+                        }
+                        else
+                        {
+                            splitArray[0]="request off";
+                        }
+                        setMatchID.child("matchID-" + intent.getLongExtra("matchId", -2)).child(phoneNumber).setValue(new Detail(nameEditText.getText().toString().trim(), utilityConstant.UPDATE, utilityConstant.STATUS,splitArray[0]));
                         dialogUpdate.dismiss();
                     }
                 }
